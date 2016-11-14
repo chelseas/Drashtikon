@@ -2,35 +2,41 @@ from frame_mod import *
 from SVM import *
 import numpy
 from skimage.feature import hog
+import argparse
 
-# a dummy function for now that labels everything 1
-def learning_method1(data, labels):
-    return (lambda x: [1 for y in range(len(x))])
+parser = argparse.ArgumentParser(description='Framework that trains all learning options.')
+parser.add_argument('class1input' , action="store", help='Input Photo Directory, relative path to script directory')
+parser.add_argument('class2input' , action="store", help='Input Photo Directory, relative path to script directory')
+args = parser.parse_args()
 
-# Clean and crop images
-folder1 = 'folder1'
-folder2 = 'folder2'
-(train_data,train_labels,test_data,test_labels) = import_data(folder1, folder2)
 
-# run learning methods
-# model should be a function that takes Image objects
-print(size(numpy.array(train_data[0])))
-print(type(train_data[0]))
-#features = [numpy.ndarray.tolist(hog(numpy.ndarray(x))) for x in train_data]
-features = getHogFeatures(train_data)
-model = SVM(features,train_labels)
+def main():
+  path = os.path.dirname(os.path.realpath(__file__))
+  inputPath1 = os.path.join(path, args.class1input)
+  inputPath2 = os.path.join(path, args.class2input)
+  (train_data,train_labels,test_data,test_labels) = import_data(inputPath1, inputPath2)
+  features = numpy.array([hog(x) for x in train_data])
+  model = SVM(features,train_labels)
+  predictions = model(numpy.array([hog(x) for x in test_data]))
+  
+  test_labels = numpy.array(test_labels)
+  
+  print(test_labels)
+  print(predictions)
 
-# model should return an array of labels the same size as the test data
-predictions = model(getHogFeatures(test_data))
-print(predictions)
-
-# compute error
-sum_error = 0
-for i in range(len(test_data)):
-    if predictions[i]!=test_labels[i]:
+  ## TODO: print to textfile
+  sum_error = 0
+  for i in range(len(test_labels)):
+    if predictions[i] != test_labels[i]:
         sum_error+=1
+  error = float(sum_error)/float(len(test_data))
+  print("Error is " + str(error))
 
-error = sum_error/len(test_data)
-print("Error is " + str(error))
 
-## TODO: print to textfile
+
+
+if __name__ == '__main__':
+  main()
+
+
+
