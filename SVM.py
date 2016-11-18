@@ -2,11 +2,15 @@
 from scipy import *
 from sklearn import svm
 
-def getHogFeatures(image_array):
-    #a = [list(x.getdata(band=0))[0:9] for x in image_array]
-    return a
-
-def SVM(train_data, train_labels):
+def rbfSVM(train_data, train_labels):
+    print("Model: RBF SVM")
     model = svm.SVC(kernel='rbf')
     model.fit(train_data, train_labels)
-    return model.predict
+    return model
+
+def linearSVM(train_data, train_labels):
+    print("Model: Linear SVM")
+    model = svm.SVC(kernel='linear')
+    model.fit(train_data, train_labels)
+    return model
+
