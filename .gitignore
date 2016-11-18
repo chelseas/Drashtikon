@@ -3,3 +3,5 @@ folder1
 folder2
 _pycache_
 *.pyc
+runner.sh
+output/*

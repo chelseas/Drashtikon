@@ -6,11 +6,10 @@ import argparse
 parser = argparse.ArgumentParser(description='Framework that trains all learning options.')
 parser.add_argument('class1Directory' , action="store", help='Input Photo Directory, relative path')
 parser.add_argument('class2Directory' , action="store", help='Input Photo Directory, relative path')
-#parser.add_argument('testClass1' , action="store", help='Input Photo Directory, relative path')
-#parser.add_argument('testClass2' , action="store", help='Input Photo Directory, relative path')
 parser.add_argument('--hog' , action="store_true", default=False, help='Input Photo Directory, relative path')
 parser.add_argument('--bright' , action="store_true", default=False, help='Input Photo Directory, relative path')
 parser.add_argument('--random' , action="store_true", default=False, help='Input Photo Directory, relative path')
+parser.add_argument('--all' , action="store_true", help='Runs all classifiers, skipping user input ')
 args = parser.parse_args()
 
 def calculateError(predictions, testLabels, msg=''):
@@ -35,8 +34,11 @@ def main():
   (rawTestData2, testLabels2) = importData(testPath2, 2)
 
   printInputStats(inputPath1, inputPath2, testPath1,  testPath2, len(rawTrainData1), len(rawTrainData2), len(rawTestData1), len(rawTestData2))
-
-  selectedModels = selectModels(MODELS)
+  
+  if not args.all:
+    selectedModels = selectModels(MODELS)
+  else:
+    selectedModels = range(len(MODELS))
 
   if args.hog:
     trainFeatures = getHogFeatures(rawTrainData1 + rawTrainData2, "train data")
