@@ -22,10 +22,10 @@ def calculateError(predictions, testLabels, msg=''):
   return error
 
 
-def printInputStats(train1, train2, testData, testClass):
-  print("Class 1 Training Set: {} examples".format(train1))
-  print("Class 2 Training Set: {} examples".format(train2))
-  print("Test Set: Class {} with {} examples".format(testClass, train2))
+def printInputStats(in1, in2, test, train1, train2, testData, testClass):
+  print("Class 1 Training Set: {} examples from {}".format(train1, os.path.basename(in1)))
+  print("Class 2 Training Set: {} examples from {}".format(train2, os.path.basename(in2)))
+  print("Test Set: Class {} with {} examples from {}".format(testClass, train2, os.path.basename(test)))
 
 def main():
   path = os.getcwd()
@@ -38,7 +38,7 @@ def main():
   (rawTrainData2, trainLabels2) = importData(inputPath2, 2)
   (rawTestData, testLabels) = importData(testPath, testClass)
 
-  printInputStats(len(rawTrainData1), len(rawTrainData2), len(rawTestData), args.testClass)
+  printInputStats(inputPath1, inputPath2, testPath, len(rawTrainData1), len(rawTrainData2), len(rawTestData), args.testClass)
 
   trainFeatures = getHogFeatures(rawTrainData1 + rawTrainData2, "train data")
   trainLabels = trainLabels1 + trainLabels2
