@@ -1,16 +1,14 @@
 from frame_mod import *
-from SVM import *
+from learn import *
 import numpy
 import argparse
 
 parser = argparse.ArgumentParser(description='Framework that trains all learning options.')
-parser.add_argument('class1input' , action="store", help='Input Photo Directory, relative path')
-parser.add_argument('class2input' , action="store", help='Input Photo Directory, relative path')
-parser.add_argument('testSet' , action="store", help='Input Photo Directory, relative path')
-parser.add_argument('testClass' , action="store", help='Input integer for class 1 or class 2')
+parser.add_argument('trainClass1' , action="store", help='Input Photo Directory, relative path')
+parser.add_argument('trainClass2' , action="store", help='Input Photo Directory, relative path')
+parser.add_argument('testClass1' , action="store", help='Input Photo Directory, relative path')
+parser.add_argument('testClass2' , action="store", help='Input Photo Directory, relative path')
 args = parser.parse_args()
-
-MODELS = [rbfSVM, linearSVM]
 
 def calculateError(predictions, testLabels, msg=''):
   sum_error = 0
@@ -22,33 +20,39 @@ def calculateError(predictions, testLabels, msg=''):
   return error
 
 
-def printInputStats(dir1, dir2, dirTest, nTrain1, nTrain2, nTest, testClass):
-  print("Class 1 Training Set: {} examples from {}".format(nTrain1, os.path.basename(dir1)))
-  print("Class 2 Training Set: {} examples from {}".format(nTrain2, os.path.basename(dir2)))
-  print("Class {} Test Set:  {} examples from {}".format(testClass, nTest, os.path.basename(dirTest)))
-
 def main():
   path = os.getcwd()
-  inputPath1 = os.path.join(path, args.class1input)
-  inputPath2 = os.path.join(path, args.class2input)
-  testPath = os.path.join(path, args.testSet)
-  testClass= int(args.testClass)
-  #(train_data,train_labels,test_data,test_labels) = import_data(inputPath1, inputPath2)
+  inputPath1 = os.path.join(path, args.trainClass1)
+  inputPath2 = os.path.join(path, args.trainClass2)
+  testPath1 = os.path.join(path, args.testClass1)
+  testPath2 = os.path.join(path, args.testClass2)
+
   (rawTrainData1, trainLabels1) = importData(inputPath1, 1)
   (rawTrainData2, trainLabels2) = importData(inputPath2, 2)
-  (rawTestData, testLabels) = importData(testPath, testClass)
+  (rawTestData1, testLabels1) = importData(testPath1, 1)
+  (rawTestData2, testLabels2) = importData(testPath2, 2)
 
-  printInputStats(inputPath1, inputPath2, testPath, len(rawTrainData1), len(rawTrainData2), len(rawTestData), args.testClass)
+  printInputStats(args.trainClass1, args.trainClass2, args.testClass1, args.testClass2, len(rawTrainData1), len(rawTrainData2), len(rawTestData1), len(rawTestData2))
+
+  selectedModels = selectModels(MODELS)
 
   trainFeatures = getHogFeatures(rawTrainData1 + rawTrainData2, "train data")
   trainLabels = trainLabels1 + trainLabels2
-  testFeatures = getHogFeatures(rawTestData, "test data")
+  
+  testFeatures1= getHogFeatures(rawTestData1, "test data")
+  testLabels1 = trainLabels1
 
-  for m in MODELS:
-    model = m(trainFeatures, trainLabels)
-    testPredictions = model.predict(testFeatures)
+  testFeatures2= getHogFeatures(rawTestData2, "test data")
+  testLabels2 = trainLabels2
+
+  for i in selectedModels:
+    print("[ {} ] {}".format(i, MODELS[i].__name__))
+    model = MODELS[i](trainFeatures, trainLabels)
+    testPredictions1 = model.predict(testFeatures1)
+    testPredictions2 = model.predict(testFeatures2)
     trainPredictions = model.predict(trainFeatures)
-    testError = calculateError(testPredictions, testLabels, 'Test')
+    testError1 = calculateError(testPredictions1, testLabels1, 'Test Class 1')
+    testError2 = calculateError(testPredictions2, testLabels2, 'Test Class 2')
     trainError = calculateError(trainPredictions, trainLabels, 'Train')
     
 
