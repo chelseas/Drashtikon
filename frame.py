@@ -22,10 +22,10 @@ def calculateError(predictions, testLabels, msg=''):
   return error
 
 
-def printInputStats(in1, in2, test, train1, train2, testData, testClass):
-  print("Class 1 Training Set: {} examples from {}".format(train1, os.path.basename(in1)))
-  print("Class 2 Training Set: {} examples from {}".format(train2, os.path.basename(in2)))
-  print("Test Set: Class {} with {} examples from {}".format(testClass, train2, os.path.basename(test)))
+def printInputStats(dir1, dir2, dirTest, nTrain1, nTrain2, nTest, testClass):
+  print("Class 1 Training Set: {} examples from {}".format(nTrain1, os.path.basename(dir1)))
+  print("Class 2 Training Set: {} examples from {}".format(nTrain2, os.path.basename(dir2)))
+  print("Class {} Test Set:  {} examples from {}".format(testClass, nTest, os.path.basename(dirTest)))
 
 def main():
   path = os.getcwd()
