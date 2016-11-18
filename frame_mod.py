@@ -1,7 +1,7 @@
 # module for frame.py
 import os, sys
 import re
-from PIL import Image
+from PIL import Image, ImageStat
 from random import *
 from math import *
 import numpy as np
@@ -15,6 +15,18 @@ def getHogFeatures(data, msg="data"):
     print("Extracting HOG features for "+ msg + "...")
     result = np.array([hog(x) for x in data])
     print("Done.")
+    return result
+
+def getMeanBrightness(data, msg="data"):
+    print("Extracting Mean Brightness for "+ msg +"...")
+    result = [ImageStat.Stat(Image.fromarray(x)).mean[0] for x in data]
+    print("Done.")
+    return result
+
+def getRandomFeatures(data, msg="data"):
+    print("Extracting Random hog features for "+ msg+ "...")
+    result = np.array([hog(x[len(x)/4: len(x)/2]) for x in data])
+    print("Done")
     return result
 
 
@@ -42,7 +54,6 @@ def selectModels(MODELS):
     print("Enter an empty line to train all \n")
     for i, m in enumerate(MODELS):
         print("[ {} ] -- {}".format(i, m.__name__))
-
     resp = [int(c.rstrip()) for c in sys.stdin.readline().split(' ') if c.rstrip().isdigit() and 0 <= int(c.rstrip()) < len(MODELS)]
     if len(resp) == 0:
         resp = range(len(MODELS))

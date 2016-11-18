@@ -1,0 +1,33 @@
+Training Set: 
+	 Class 1 -- 470 examples from /Users/zmaurer/Documents/Academics/2016_2017/CS229/final_project/code/ML-party/../../photos/80_20_data/osd_cropped_partition_1117121428/train
+	 Class 2 -- 1255 examples from /Users/zmaurer/Documents/Academics/2016_2017/CS229/final_project/code/ML-party/../../photos/80_20_data/ptosis_cropped_partition_1117121244/train
+Test Set: 
+	 Class 1 -- 117 examples from /Users/zmaurer/Documents/Academics/2016_2017/CS229/final_project/code/ML-party/../../photos/80_20_data/osd_cropped_partition_1117121428/test
+	 Class 2 -- 313 examples from /Users/zmaurer/Documents/Academics/2016_2017/CS229/final_project/code/ML-party/../../photos/80_20_data/ptosis_cropped_partition_1117121244/test
+
+ Type numbered indexes separated by spaces to select models to train.
+Enter an empty line to train all 
+
+[ 0 ] -- rbfSVM
+[ 1 ] -- rbfSVMBalanced
+[ 2 ] -- linearSVM
+[ 3 ] -- linearSVMBalanced
+[ 4 ] -- logisticRegression
+[ 5 ] -- logisticRegressionBalanced
+Selected the following models [0, 1, 2, 3, 4, 5] 
+
+Extracting Mean Brightness for train data...
+Done.
+Extracting Mean Brightness for test data...
+Done.
+Extracting Mean Brightness for test data...
+Done.
+[ 0 ] rbfSVM
+	 Test Class 1 Error is 0.246808510638
+	 Test Class 2 Error is 0.00876494023904
+	 Train Error is 0.264927536232
+[ 1 ] rbfSVMBalanced
+	 Test Class 1 Error is 0.114893617021
+	 Test Class 2 Error is 0.122709163347
+	 Train Error is 0.380869565217
+[ 2 ] linearSVM
