@@ -5,9 +5,9 @@ echo "*********************************************************" >> echo $now >>
 echo "*********************************************************" >> echo $now >>  ./output/reports/str_ptosis.txt
 echo "*********************************************************" >> echo $now >> ./output/reports/osd_str.txt
 
-python frame.py ../../photos/80_20_data/osd_cropped_partition_1117121428/ ../../photos/80_20_data/ptosis_cropped_partition_1117121244/ --bright --all >> ./output/reports/osd_ptosis.txt &
-python frame.py ../../photos/80_20_data/str_cropped_partition_1117121443/ ../../photos/80_20_data/ptosis_cropped_partition_1117121244/ --bright --all >> ./output/reports/str_ptosis.txt  &
-python frame.py ../../photos/80_20_data/osd_cropped_partition_1117121428/ ../../photos/80_20_data/str_cropped_partition_1117121443/ --bright --all >> ./output/reports/osd_str.txt &
+python frame.py ../../photos/80_20_data/osd_cropped_partition_1117121428/ ../../photos/80_20_data/ptosis_cropped_partition_1117121244/ --hog --all >> ./output/reports/osd_ptosis.txt &
+python frame.py ../../photos/80_20_data/str_cropped_partition_1117121443/ ../../photos/80_20_data/ptosis_cropped_partition_1117121244/ --hog --all >> ./output/reports/str_ptosis.txt  &
+python frame.py ../../photos/80_20_data/osd_cropped_partition_1117121428/ ../../photos/80_20_data/str_cropped_partition_1117121443/ --hog --all >> ./output/reports/osd_str.txt &
 
 wait
 
