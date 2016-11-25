@@ -59,4 +59,3 @@ def selectModels(MODELS):
         resp = range(len(MODELS))
     print("Selected the following models {} \n".format(resp))
     return resp
-
