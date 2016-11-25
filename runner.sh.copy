@@ -6,7 +6,7 @@ echo "*********************************************************" >> echo $now >>
 echo "*********************************************************" >> echo $now >> ./output/reports/osd_str.txt
 
 #python3 frame.py test_train_partitions/osd_partition/osd_all_k_fold_partition_1120114336/ test_train_partitions/ptosis_partition/ptosis_all_k_fold_partition_1120114756/ --hog >> ./output/reports/osd_ptosis.txt #&
-python3 frame.py test_train_partitions/str_partition/str_all_k_fold_partition_1120131041/ test_train_partitions/ptosis_partition/ptosis_all_k_fold_partition_1120114756/ --hog >> ./output/reports/str_ptosis.txt  &
+python3 frame.py test_train_partitions/str_partition/str_all_k_fold_partition_1120131041/ test_train_partitions/ptosis_partition/ptosis_all_k_fold_partition_1120114756/ 5 --hog #>> ./output/reports/str_ptosis.txt  &
 #python3 frame.py test_train_partitions/osd_partition/osd_all_k_fold_partition_1120114336/ test_train_partitions/str_partition/str_all_k_fold_partition_1120131041/ --hog >> ./output/reports/osd_str.txt &
 
 #wait
