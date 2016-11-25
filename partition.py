@@ -4,9 +4,9 @@ from shutil import copy
 from random import shuffle
 from datetime import datetime
 
-parser = argparse.ArgumentParser(description='Divides cropped data into test and train data.')
+parser = argparse.ArgumentParser(description='Divides cropped data into k-fold CV subsets.')
 parser.add_argument('inputFolder' , action="store", help='Input Photo Directory, relative path to script directory')
-#parser.add_argument('testPercent', action="store", help='Decimal representing fraction to put in test set')
+parser.add_argument('numberFolds', action="store", help='Number of folds in k-fold cross-validation')
 args = parser.parse_args()
 
 
@@ -19,15 +19,15 @@ def main():
   shuffle(imgFiles) # this line randomizes
   ouptutDir = os.path.join(target,'..', os.path.basename(target) + "_k_fold_partition_"+datetime.now().strftime("%m%d%H%M%S"))
   os.mkdir(ouptutDir)
-  fold = 5
+  fold = args.numberFolds
   size_partition = int(len(imgFiles)*(1.0/fold))
   max_index = len(imgFiles)
   # store range objects
   ########################
   for k in range(1,fold+1):
       test_subset = range((k-1)*size_partition,(k-1)*size_partition + size_partition)
+      # concatenate two ranges
       train_subset = [i for j in (range(0,(k-1)*size_partition), range((k-1)*size_partition + size_partition, max_index) ) for i in j]
-      #ntest = int(size_partition *float(args.testPercent))
       ouptutDir_test = os.path.join(ouptutDir, "test_k"+str(k))
       ouptutDir_train = os.path.join(ouptutDir, "train_k"+str(k))
       os.mkdir(ouptutDir_test)
