@@ -1,0 +1,4 @@
+'Diseases','Model','Features','Disease 1 Test Error','Disease 2 Test Error','Train Error'
+osd_str,rbfSVM,random,1.0,0.0,0.183164458301
+osd_ptosis,rbfSVM,random,1.0,0.0,0.272463768116
+str_ptosis,rbfSVM,random,0.0,1.0,0.374515070128
