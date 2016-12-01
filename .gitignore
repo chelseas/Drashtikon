@@ -8,3 +8,8 @@ output/*
 analysis/output/*
 .DS_Store
 test_train_partitions
+*__pycache__
+*.pyc
+.gitignore
+*.png
+*.jpg

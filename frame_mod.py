@@ -25,7 +25,7 @@ def getMeanBrightness(data, msg="data"):
 
 def getRandomFeatures(data, msg="data"):
     print("Extracting Random hog features for "+ msg+ "...")
-    result = np.array([hog(x[len(x)/4: len(x)/2]) for x in data])
+    result = np.array([hog(x[floor(len(x)/4): floor(len(x)/2)]) for x in data])
     print("Done")
     return result
 
@@ -34,7 +34,10 @@ def importData(path, label):
     data = []
     for filename in os.listdir(path):
         if p.match(filename):
-            img = np.array(Image.open(os.path.join(path, filename)))
+            print(filename)
+            print("spacer")
+            print(path+filename)
+            img = np.array(Image.open(path+filename))
             data.append(img)
     labels = [label for x in range(len(data))]
     return (data, labels)
