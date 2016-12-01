@@ -1,5 +1,0 @@
-'Diseases','Model','Features','Disease 1 Test Error','Disease 2 Test Error','Train Error'
-str_ptosis,logisticRegression,hog,0.068068833652,0.174440894569,0.0139659803044
-osd_ptosis,rbfSVM,hog,1.0,0.0,0.272463768116
-str_ptosis,rbfSVM,hog,0.0,1.0,0.374515070128
-osd_str,rbfSVM,hog,1.0,0.0,0.183164458301

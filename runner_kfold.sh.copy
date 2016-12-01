@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#now=`date `
+#echo "*********************************************************" >> echo $now >> ./output/reports/osd_ptosis.txt
+#echo "*********************************************************" >> echo $now >>  ./output/reports/str_ptosis.txt
+#echo "*********************************************************" >> echo $now >> ./output/reports/osd_str.txt
+
+nohup python frame.py test_train_partitions/osd_partition/osd_all_k_fold_partition_1120114336/ test_train_partitions/ptosis_partition/ptosis_all_k_fold_partition_1120114756/ 5 --hog --all & #>> ./output/reports/osd_ptosis.txt #&
+nohup python frame.py test_train_partitions/str_partition/str_all_k_fold_partition_1120131041/ test_train_partitions/ptosis_partition/ptosis_all_k_fold_partition_1120114756/ 5 --bright --all & #>> ./output/reports/str_ptosis.txt  &
+nohup python frame.py test_train_partitions/osd_partition/osd_all_k_fold_partition_1120114336/ test_train_partitions/str_partition/str_all_k_fold_partition_1120131041/ 5 --random & --all #>> ./output/reports/osd_str.txt &
+
+wait
+
+nohup python frame.py test_train_partitions/osd_partition/osd_all_k_fold_partition_1120114336/ test_train_partitions/ptosis_partition/ptosis_all_k_fold_partition_1120114756/ 5 --random --all & #>> ./output/reports/osd_ptosis.txt #&
+nohup python frame.py test_train_partitions/str_partition/str_all_k_fold_partition_1120131041/ test_train_partitions/ptosis_partition/ptosis_all_k_fold_partition_1120114756/ 5 --hog --all & #>> ./output/reports/str_ptosis.txt  &
+nohup python frame.py test_train_partitions/osd_partition/osd_all_k_fold_partition_1120114336/ test_train_partitions/str_partition/str_all_k_fold_partition_1120131041/ 5 --bright  --all & #>> ./output/reports/osd_str.txt &
+
+wait
+
+nohup python frame.py test_train_partitions/osd_partition/osd_all_k_fold_partition_1120114336/ test_train_partitions/ptosis_partition/ptosis_all_k_fold_partition_1120114756/ 5 --bright --all & #>> ./output/reports/osd_ptosis.txt #&
+nohup python frame.py test_train_partitions/str_partition/str_all_k_fold_partition_1120131041/ test_train_partitions/ptosis_partition/ptosis_all_k_fold_partition_1120114756/ 5 --random  --all & #>> ./output/reports/str_ptosis.txt  &
+nohup python frame.py test_train_partitions/osd_partition/osd_all_k_fold_partition_1120114336/ test_train_partitions/str_partition/str_all_k_fold_partition_1120131041/ 5 --hog --all & #>> ./output/reports/osd_str.txt &
+
+
+echo "Done"

@@ -1,4 +1,0 @@
-'Diseases','Model','Features','Disease 1 Test Error','Disease 2 Test Error','Train Error'
-str_ptosis,rbfSVM,bright,0.0497131931166,0.931629392971,0.35410325276
-osd_str,rbfSVM,bright,0.994871794872,0.0019120458891,0.181605611847
-osd_ptosis,rbfSVM,bright,0.993162393162,0.0153354632588,0.267942028986

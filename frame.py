@@ -8,7 +8,7 @@ import csv
 parser = argparse.ArgumentParser(description='Framework that trains all learning options.')
 parser.add_argument('class1Directory' , action="store", help='Input Photo Directory, relative path')
 parser.add_argument('class2Directory' , action="store", help='Input Photo Directory, relative path')
-parser.add_argument('number_k_folds', action="store", default=1, help='Input number of k-folds if you''d like to use k-fold cross validation')
+parser.add_argument('number_k_folds', action="store", default=1, help='Input number of k-folds if you''d like to use for k-fold cross validation')
 parser.add_argument('--hog' , action="store_true", default=False, help='Use hog features. If more than one feature selected, only first used.')
 parser.add_argument('--bright' , action="store_true", default=False, help='Use mean brightness feature. If more than one feature selected, only first used.')
 parser.add_argument('--random' , action="store_true", default=False, help='Use random subset of hog features. If more than one feature selected, only first used.')
@@ -52,7 +52,7 @@ else:
 def main():
     # return indices of models being used
     if not args.all:
-      selectedModels = range(1,len(MODELS)) #selectModels(MODELS)
+      selectedModels = selectModels(MODELS)
     else:
       selectedModels = range(len(MODELS))
 
@@ -75,6 +75,7 @@ def main():
     # currently being run
     num_models = len(MODELS)
     # the three layers of the error matrix are test error on class 1, test err cls.2 and train error
+    # the y-dimension (row) is fold index and the x-dimension (col) is the model index
     error_matrix = np.zeros((3,folds,num_models))
     for k in range(1,folds+1):
       path = os.getcwd()
@@ -113,7 +114,7 @@ def main():
         testFeatures1= getRandomFeatures(rawTestData1, "test data")
         testFeatures2= getRandomFeatures(rawTestData2, "test data")
 
-#      testLabels1 = trainLabels1 # Better question: why didn't this throw an error? train and test were different sizes
+#      testLabels1 = trainLabels1 # Better question: why didn't this throw an error? train and test labels were different sizes
 #      testLabels2 = trainLabels2
 
 
@@ -129,15 +130,14 @@ def main():
         error_matrix[:,k-1,i] = [testError1, testError2, trainError]
 
     # print average error over all folds
-    # diseases,model,feature,test1error,test2error,training,,
+    # ['Diseases','Model','Features','Eval Set','Error Value']
     avg_err = np.sum(error_matrix,axis=1)/float(folds)
-    #with open('error.csv','w') as csvfile:
-    #    writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
-    #    writer.writerow(['Diseases','Model','Features','Disease 1 Test Error','Disease 2 Test Error','Train Error'])
     for j in selectedModels:
         with open(file_to_write_to,'a') as csvfile:
             writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
-            writer.writerow([dis_set,str(MODELS[j].__name__),feat,str(avg_err[0,j]),str(avg_err[1,j]),str(avg_err[2,j])])
+            writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[0],str(avg_err[0,j])])
+            writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[1],str(avg_err[1,j])])
+            writer.writerow([dis_set,str(MODELS[j].__name__),feat,'train',str(avg_err[2,j])])
 
 if __name__ == '__main__':
   main()
