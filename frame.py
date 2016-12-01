@@ -88,10 +88,10 @@ def main():
           testPath1 = os.path.join(path, args.class1Directory, "test_k"+str(k))
           testPath2 = os.path.join(path, args.class2Directory, "test_k"+str(k))
       else:
-          inputPath1 = os.path.join(path, args.class1Directory)
-          inputPath2 = os.path.join(path, args.class2Directory)
-          testPath1 = os.path.join(path, args.class1Directory)
-          testPath2 = os.path.join(path, args.class2Directory)
+          inputPath1 = os.path.join(path, args.class1Directory, "train")
+          inputPath2 = os.path.join(path, args.class2Directory, "train")
+          testPath1 = os.path.join(path, args.class1Directory, "test")
+          testPath2 = os.path.join(path, args.class2Directory, "test")
 
       (rawTrainData1, trainLabels1) = importData(inputPath1, 1)
       (rawTrainData2, trainLabels2) = importData(inputPath2, 2)
@@ -114,10 +114,6 @@ def main():
         trainFeatures = getRandomFeatures(rawTrainData1 + rawTrainData2, "train data")
         testFeatures1= getRandomFeatures(rawTestData1, "test data")
         testFeatures2= getRandomFeatures(rawTestData2, "test data")
-
-#      testLabels1 = trainLabels1 # Better question: why didn't this throw an error? train and test labels were different sizes
-#      testLabels2 = trainLabels2
-
 
       for i in selectedModels:
         print("[ {} ] {}".format(i, MODELS[i].__name__))
