@@ -23,7 +23,7 @@ def main():
   os.mkdir(ouptutDir_test)
   os.mkdir(ouptutDir_train)
   for i in range(ntest):
-    copy(os.path.join(target, imgFiles[i]), ouptutDir_test) 
+    copy(os.path.join(target, imgFiles[i]), ouptutDir_test)
     # print(imgFiles[i])
     # print(ouptutDir_test)
   for i in range(ntest, len(imgFiles)):

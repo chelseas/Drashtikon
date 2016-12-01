@@ -24,7 +24,7 @@ def linearSVM(train_data, train_labels):
     return model
 
 def linearSVMBalanced(train_data, train_labels):
-    model = svm.SVC(kernel='rbf', class_weight='balanced')
+    model = svm.SVC(kernel='linear', class_weight='balanced')
     model.fit(train_data, train_labels)
     return model
 
