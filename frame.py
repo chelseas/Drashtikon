@@ -52,16 +52,19 @@ else:
 def main():
     # return indices of models being used
     if not args.all:
-      selectedModels = selectModels(MODELS)
+      selectedModels = range(1,len(MODELS)) #selectModels(MODELS)
     else:
       selectedModels = range(len(MODELS))
 
     if args.hog:
         feat="hog"
+        file_to_write_to = 'error_hog.csv'
     elif args.bright:
         feat="bright"
+        file_to_write_to = 'error_bright.csv'
     elif args.random:
         feat="random"
+        file_to_write_to = 'error_random.csv'
     else:
         print("No feature type selected. Exiting...")
         exit(1)
@@ -110,7 +113,7 @@ def main():
         testFeatures1= getRandomFeatures(rawTestData1, "test data")
         testFeatures2= getRandomFeatures(rawTestData2, "test data")
 
-#      testLabels1 = trainLabels1 # WHY was this still here??
+#      testLabels1 = trainLabels1 # Better question: why didn't this throw an error? train and test were different sizes
 #      testLabels2 = trainLabels2
 
 
@@ -132,7 +135,7 @@ def main():
     #    writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
     #    writer.writerow(['Diseases','Model','Features','Disease 1 Test Error','Disease 2 Test Error','Train Error'])
     for j in selectedModels:
-        with open('error.csv','a') as csvfile:
+        with open(file_to_write_to,'a') as csvfile:
             writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
             writer.writerow([dis_set,str(MODELS[j].__name__),feat,str(avg_err[0,j]),str(avg_err[1,j]),str(avg_err[2,j])])
 
