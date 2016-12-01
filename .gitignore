@@ -6,3 +6,5 @@ _pycache_
 runner.sh
 output/*
 analysis/output/*
+.DS_Store
+test_train_partitions
