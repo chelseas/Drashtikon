@@ -20,8 +20,8 @@ def main():
   shuffle(imgFiles) # this line randomizes
   ouptutDir = os.path.join(target,'..', os.path.basename(target) + "_k_fold_partition_"+datetime.now().strftime("%m%d%H%M%S"))
   os.mkdir(ouptutDir)
-  fold = args.numberFolds
-  size_partition = int(len(imgFiles)*(1.0/fold))
+  fold = int(args.numberFolds)
+  size_partition = int(len(imgFiles)*(1.0/float(fold)))
   max_index = len(imgFiles)
   ########################
   for k in range(1,fold+1):

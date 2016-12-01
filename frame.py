@@ -4,6 +4,7 @@ import numpy as np
 import re
 import argparse
 import csv
+from datetime import datetime
 
 parser = argparse.ArgumentParser(description='Framework that trains all learning options.')
 parser.add_argument('class1Directory' , action="store", help='Input Photo Directory, relative path')
@@ -58,13 +59,13 @@ def main():
 
     if args.hog:
         feat="hog"
-        file_to_write_to = 'error_hog.csv'
+        file_to_write_to = 'output/{}_error_hog.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
     elif args.bright:
         feat="bright"
-        file_to_write_to = 'error_bright.csv'
+        file_to_write_to = 'ouput/{}_error_bright.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
     elif args.random:
         feat="random"
-        file_to_write_to = 'error_random.csv'
+        file_to_write_to = 'output/{}_error_random.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
     else:
         print("No feature type selected. Exiting...")
         exit(1)

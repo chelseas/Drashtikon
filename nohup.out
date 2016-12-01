@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "frame.py", line 1, in <module>
+    from frame_mod import *
+  File "/Users/zmaurer/Documents/Academics/2016_2017/CS229/final_project/code/ML-party/frame_mod.py", line 4, in <module>
+    from PIL import Image, ImageStat
+ImportError: No module named PIL
