@@ -6,7 +6,7 @@ from random import *
 from math import *
 import numpy as np
 import copy
-from skimage.feature import hog
+from skimage.feature import hog, daisy
 import sys
 
 p = re.compile('.*[.]jpg',re.IGNORECASE)
@@ -29,6 +29,32 @@ def getRandomFeatures(data, msg="data"):
     print("Done")
     return result
 
+
+def getCroppedHogFeatures(data, msg="data"):
+  print("Extracting Cropped HOG features for "+ msg +"...")
+  result = []
+  for x in data:
+    img = Image.fromarray(x)
+    width = img.size[0]
+    newDim = 90
+    offsetX = 35
+    offsetY = 5
+    img_l = img.crop((offsetX, offsetY, offsetX+newDim, newDim + offsetY))
+    img_r = img.crop((width-newDim-offsetX, offsetY, width-offsetX, newDim + offsetY))
+    assert(img_l.size[0] == img_r.size[0])
+    assert(img_l.size[1] == img_r.size[1])
+    featuresL = hog(np.array(img_l))
+    featuresR = hog(np.array(img_r))
+    combinedFeatures = np.concatenate((featuresL, featuresR))
+    result.append(combinedFeatures)
+  print("Done")
+  return result
+
+def getDaisyFeatures(data, msg="data"):
+    print("Extracting DAISY features for "+ msg+ "...")
+    result = np.array([daisy(x) for x in data])
+    print("Done")
+    return result
 
 def importData(path, label):
     data = []

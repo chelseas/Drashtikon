@@ -11,6 +11,8 @@ parser.add_argument('class1Directory' , action="store", help='Input Photo Direct
 parser.add_argument('class2Directory' , action="store", help='Input Photo Directory, relative path')
 parser.add_argument('number_k_folds', action="store", default=1, help='Input number of k-folds if you''d like to use for k-fold cross validation')
 parser.add_argument('--hog' , action="store_true", default=False, help='Use hog features. If more than one feature selected, only first used.')
+parser.add_argument('--croppedhog' , action="store_true", default=False, help='Used cropped hog features.')
+parser.add_argument('--daisy' , action="store_true", default=False, help='Use DAISY features, similar to sift.')
 parser.add_argument('--bright' , action="store_true", default=False, help='Use mean brightness feature. If more than one feature selected, only first used.')
 parser.add_argument('--random' , action="store_true", default=False, help='Use random subset of hog features. If more than one feature selected, only first used.')
 parser.add_argument('--all' , action="store_true", help='Runs all classifiers, skipping user input ')
@@ -66,6 +68,12 @@ def main():
     elif args.random:
         feat="random"
         file_to_write_to = 'output/{}_error_random.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
+    elif args.croppedhog:
+        feat="croppedhog"
+        file_to_write_to = 'output/{}_error_croppedhog.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
+    elif args.daisy:
+        feat="daisy"
+        file_to_write_to = 'output/{}_error_daisy.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
     else:
         print("No feature type selected. Exiting...")
         exit(1)
@@ -114,6 +122,14 @@ def main():
         trainFeatures = getRandomFeatures(rawTrainData1 + rawTrainData2, "train data")
         testFeatures1= getRandomFeatures(rawTestData1, "test data")
         testFeatures2= getRandomFeatures(rawTestData2, "test data")
+      elif feat=="croppedhog":
+        trainFeatures = getCroppedHogFeatures(rawTrainData1 + rawTrainData2, "train data")
+        testFeatures1= getCroppedHogFeatures(rawTestData1, "test data")
+        testFeatures2= getCroppedHogFeatures(rawTestData2, "test data")
+      elif feat=="daisy":
+        trainFeatures = getDaisyFeatures(rawTrainData1 + rawTrainData2, "train data")
+        testFeatures1= getDaisyFeatures(rawTestData1, "test data")
+        testFeatures2= getDaisyFeatures(rawTestData2, "test data")
 
       for i in selectedModels:
         print("[ {} ] {}".format(i, MODELS[i].__name__))
@@ -129,12 +145,12 @@ def main():
     # print average error over all folds
     # ['Diseases','Model','Features','Eval Set','Error Value']
     avg_err = np.sum(error_matrix,axis=1)/float(folds)
-    for j in selectedModels:
-        with open(file_to_write_to,'a') as csvfile:
-            writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
-            writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[0],str(avg_err[0,j])])
-            writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[1],str(avg_err[1,j])])
-            writer.writerow([dis_set,str(MODELS[j].__name__),feat,'train',str(avg_err[2,j])])
+    with open(file_to_write_to,'w') as csvfile:
+      for j in selectedModels:  
+        writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
+        writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[0],str(avg_err[0,j])])
+        writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[1],str(avg_err[1,j])])
+        writer.writerow([dis_set,str(MODELS[j].__name__),feat,'train',str(avg_err[2,j])])
 
 if __name__ == '__main__':
   main()
