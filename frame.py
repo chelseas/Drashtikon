@@ -59,21 +59,23 @@ def main():
     else:
       selectedModels = range(len(MODELS))
 
+    outFolder = datetime.now().strftime("%m%d%H%M%S")
+    os.mkdir(os.path.join(os.getcwd(), 'output', outFolder))
     if args.hog:
         feat="hog"
-        file_to_write_to = 'output/{}_error_hog.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
+        file_to_write_to = os.path.join('output', outFolder, 'error_hog.csv')
     elif args.bright:
         feat="bright"
-        file_to_write_to = 'ouput/{}_error_bright.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
+        file_to_write_to = os.path.join('output', outFolder, 'error_bright.csv')
     elif args.random:
         feat="random"
-        file_to_write_to = 'output/{}_error_random.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
+        file_to_write_to = os.path.join('output', outFolder, 'error_random.csv')
     elif args.croppedhog:
         feat="croppedhog"
-        file_to_write_to = 'output/{}_error_croppedhog.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
+        file_to_write_to = os.path.join('output', outFolder, 'error_croppedhog.csv')
     elif args.daisy:
         feat="daisy"
-        file_to_write_to = 'output/{}_error_daisy.csv'.format(datetime.now().strftime("%m%d%H%M%S"))
+        file_to_write_to = os.path.join('output', outFolder, 'error_daisy.csv')
     else:
         print("No feature type selected. Exiting...")
         exit(1)
@@ -146,8 +148,8 @@ def main():
     # ['Diseases','Model','Features','Eval Set','Error Value']
     avg_err = np.sum(error_matrix,axis=1)/float(folds)
     with open(file_to_write_to,'w') as csvfile:
-      for j in selectedModels:  
-        writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
+      writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
+      for j in selectedModels:
         writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[0],str(avg_err[0,j])])
         writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[1],str(avg_err[1,j])])
         writer.writerow([dis_set,str(MODELS[j].__name__),feat,'train',str(avg_err[2,j])])
