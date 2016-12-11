@@ -9,6 +9,9 @@ import copy
 from skimage.feature import hog, daisy
 import sys
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+import csv
+
 import itertools
 from sklearn.metrics import confusion_matrix
 
@@ -17,6 +20,14 @@ p = re.compile('.*[.]jpg',re.IGNORECASE)
 def getHogFeatures(data, msg="data"):
     print("Extracting HOG features for "+ msg + "...")
     result = np.array([hog(x) for x in data])
+    print("Done.")
+    return result
+
+def getPCAHogFeatures(data, msg="data", nComponents=None):
+    print("Extracting PCA HOG features for "+ msg + " with {} components").format("default" if nComponents is None else nComponents)
+    rawHog = np.array([hog(x) for x in data])
+    pca = PCA(n_components=nComponents)
+    result = pca.fit_transform(rawHog) 
     print("Done.")
     return result
 
@@ -95,7 +106,7 @@ def selectModels(MODELS):
 
 def calculateError(predictions, testLabels, msg=''):
   sum_error = 0
-  for i in range(predictions.size):
+  for i in range(len(predictions)):
     if predictions[i] != testLabels[i]:
         sum_error += 1
   error = float(sum_error)/float(len(testLabels))
@@ -103,15 +114,37 @@ def calculateError(predictions, testLabels, msg=''):
   return error
 
 
-def plotConfusionMatrix(trueLabels, predLabels, classNames):
+def plotConfusionMatrix(trueLabels, predLabels, classNames, savePlot, timestamp, modelName):
       cnf_matrix = confusion_matrix(trueLabels, predLabels)
       np.set_printoptions(precision=2)
       plt.figure()
-      drawConfusionMatrix(cnf_matrix, classes=["class1", "class2"], title='Confusion matrix, without normalization')
+      drawConfusionMatrix(cnf_matrix, classes=classNames, title='Confusion matrix, without normalization')
       plt.figure()
-      drawConfusionMatrix(cnf_matrix, classes=["class1", "class2"], normalize=True, title='Normalized confusion matrix')
-      plt.show()
+      drawConfusionMatrix(cnf_matrix, classes=classNames, normalize=True, title='Normalized confusion matrix')
+      if savePlot:
+        filename = modelName+'.png'
+        outfolder = os.path.abspath(os.path.join('output', 'confusion_matrix_'+timestamp))
+        if not os.path.exists(outfolder):
+            os.mkdir(outfolder)
+        plt.savefig(os.path.join(outfolder, filename), bbox_inches='tight')
+      else:
+        plt.show()
 
+def getDiseaseName(folder):
+    diseases = ["ptosis", "cataract", "dermoid_cyst", "goonderson_flap", "str", "osd"]
+    for d in diseases:
+        if d in folder:
+            return d
+    print("Disease not found")
+    exit(1)
+
+def writeOverallResultsToCSV(results, target):
+    outfile = os.path.abspath(os.path.join('output', target+'_overall_error.csv'))
+    with open(outfile,'wb') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(['train_error', 'test_error', 'model', 'feature'])
+        for row in results:
+            writer.writerow(row)
 
 
 def drawConfusionMatrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
@@ -127,9 +160,9 @@ def drawConfusionMatrix(cm, classes, normalize=False, title='Confusion matrix', 
     plt.yticks(tick_marks, classes)
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
-    else:
-        print('Confusion matrix, without normalization')
+        #print("Normalized confusion matrix")
+    #else:
+        #print('Confusion matrix, without normalization')
 
     #print(cm)
     thresh = cm.max() / 2.

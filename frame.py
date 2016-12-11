@@ -147,7 +147,7 @@ def main():
     # print average error over all folds
     # ['Diseases','Model','Features','Eval Set','Error Value']
     avg_err = np.sum(error_matrix,axis=1)/float(folds)
-    with open(file_to_write_to,'w') as csvfile:
+    with open(file_to_write_to,'a') as csvfile:
       writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
       for j in selectedModels:
         writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[0],str(avg_err[0,j])])

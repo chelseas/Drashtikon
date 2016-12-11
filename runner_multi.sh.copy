@@ -1,0 +1,13 @@
+#!/bin/bash
+
+now=`date `
+echo "*********************************************************" >> echo $now >> ./output/reports/multi.txt
+
+python frame_multi.py ../../photos/testData/partition_test/ --hog --saveplot --all >> ./output/reports/multi.txt
+python frame_multi.py ../../photos/testData/partition_test/ --bright --saveplot --all >> ./output/reports/multi.txt
+python frame_multi.py ../../photos/testData/partition_test/ --pcahog --saveplot --all >> ./output/reports/multi.txt
+
+
+
+
+echo "Done"
