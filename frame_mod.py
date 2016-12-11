@@ -29,7 +29,6 @@ def getRandomFeatures(data, msg="data"):
     print("Done")
     return result
 
-
 def getCroppedHogFeatures(data, msg="data"):
   print("Extracting Cropped HOG features for "+ msg +"...")
   result = []
@@ -85,3 +84,4 @@ def selectModels(MODELS):
         resp = range(len(MODELS))
     print("Selected the following models {} \n".format(resp))
     return resp
+
