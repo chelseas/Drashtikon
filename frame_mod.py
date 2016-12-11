@@ -73,6 +73,11 @@ def printInputStats(train1, train2, test1, test2, ntrain1, ntrain2, ntest1, ntes
   print("\t Class 1 -- {} examples from {}".format(ntest1, test1))
   print("\t Class 2 -- {} examples from {}".format(ntest2, test2))
 
+def printMulticlassInputStats(trainDir, nTrain, testDir, nTest, label):
+  print("Class {} -----").format(label)
+  print("\t Training: {} examples from {}".format(nTrain, trainDir))
+  print("\t Test: {} examples from {}".format(nTest, testDir))
+
 
 def selectModels(MODELS):
     print("\n Type numbered indexes separated by spaces to select models to train.")
@@ -85,3 +90,11 @@ def selectModels(MODELS):
     print("Selected the following models {} \n".format(resp))
     return resp
 
+def calculateError(predictions, testLabels, msg=''):
+  sum_error = 0
+  for i in range(predictions.size):
+    if predictions[i] != testLabels[i]:
+        sum_error += 1
+  error = float(sum_error)/float(len(testLabels))
+  print(("\t {} Error is " + str(error)).format(msg))
+  return error
