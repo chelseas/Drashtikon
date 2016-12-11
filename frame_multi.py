@@ -59,8 +59,7 @@ def main():
       OUTPUT_ID = OUTPUT_ID+"_hog"
       FEATURE = "hog"
     elif args.pcahog:
-      trainFeatures = getPCAHogFeatures(trainData, "train data")
-      testFeatures= getPCAHogFeatures(testData, "test data")
+      trainFeatures, testFeatures = getPCAHogFeatures(trainData=trainData, testData=testData, msg="train/test data", nComponents=len(trainData))
       OUTPUT_ID = OUTPUT_ID+"_pcahog"
       FEATURE = "pcahog"
     elif args.bright:
@@ -84,8 +83,7 @@ def main():
       OUTPUT_ID = OUTPUT_ID+"_daisy"
       FEATURE = "daisy"
     elif args.pcacroppedhog:
-      trainFeatures = getPCACroppedHogFeatures(trainData, "train data")
-      testFeatures= getPCACroppedHogFeatures(testData, "test data")
+      trainFeatures, testFeatures = getPCACroppedHogFeatures(trainData=trainData, testData=testData, msg="train/test data", nComponents=len(trainData))
       OUTPUT_ID = OUTPUT_ID+"_pcacroppedhog"
       FEATURE = "pcacroppedhog"
     else:

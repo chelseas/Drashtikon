@@ -23,13 +23,16 @@ def getHogFeatures(data, msg="data"):
     print("Done.")
     return result
 
-def getPCAHogFeatures(data, msg="data", nComponents=None):
+def getPCAHogFeatures(trainData, testData, msg="data", nComponents=None):
     print("Extracting PCA HOG features for "+ msg + " with {} components").format("default" if nComponents is None else nComponents)
-    rawHog = np.array([hog(x) for x in data])
+    rawHogTrain = np.array([hog(x) for x in trainData])
+    rawHogTest = np.array([hog(x) for x in testData])
     pca = PCA(n_components=nComponents)
-    result = pca.fit_transform(rawHog) 
+    pca.fit(rawHogTrain) 
+    train = pca.transform(rawHogTrain)
+    test = pca.transform(rawHogTest) 
     print("Done.")
-    return result
+    return (train, test)
 
 def getMeanBrightness(data, msg="data"):
     print("Extracting Mean Brightness for "+ msg +"...")
@@ -44,10 +47,11 @@ def getRandomFeatures(data, msg="data"):
     return result
 
 
-def getPCACroppedHogFeatures(data, msg="data",nComponents=None):
+def getPCACroppedHogFeatures(trainData, testData, msg="data",nComponents=None):
   print("Extracting PCA Cropped HOG features for "+ msg +"...")
-  rawHog = []
-  for x in data:
+  rawHogTrain = []
+  rawHogTest = []
+  for x in trainData:
     img = Image.fromarray(x)
     width = img.size[0]
     newDim = 90
@@ -60,11 +64,28 @@ def getPCACroppedHogFeatures(data, msg="data",nComponents=None):
     featuresL = hog(np.array(img_l))
     featuresR = hog(np.array(img_r))
     combinedFeatures = np.concatenate((featuresL, featuresR))
-    rawHog.append(combinedFeatures)
+    rawHogTrain.append(combinedFeatures)
+  for x in testData:
+    img = Image.fromarray(x)
+    width = img.size[0]
+    newDim = 90
+    offsetX = 35
+    offsetY = 5
+    img_l = img.crop((offsetX, offsetY, offsetX+newDim, newDim + offsetY))
+    img_r = img.crop((width-newDim-offsetX, offsetY, width-offsetX, newDim + offsetY))
+    assert(img_l.size[0] == img_r.size[0])
+    assert(img_l.size[1] == img_r.size[1])
+    featuresL = hog(np.array(img_l))
+    featuresR = hog(np.array(img_r))
+    combinedFeatures = np.concatenate((featuresL, featuresR))
+    rawHogTest.append(combinedFeatures)
+
   pca = PCA(n_components=nComponents)
-  result = pca.fit_transform(rawHog) 
+  pca.fit(rawHogTrain) 
+  train = pca.transform(rawHogTrain)
+  test = pca.transform(rawHogTest) 
   print("Done")
-  return result
+  return (train, test)
 
 def getCroppedHogFeatures(data, msg="data"):
   print("Extracting Cropped HOG features for "+ msg +"...")
