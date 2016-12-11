@@ -44,7 +44,7 @@ def getRandomFeatures(data, msg="data"):
     return result
 
 
-def getPCACroppedHogFeatures(data, msg="data"):
+def getPCACroppedHogFeatures(data, msg="data",nComponents=None):
   print("Extracting PCA Cropped HOG features for "+ msg +"...")
   rawHog = []
   for x in data:
