@@ -11,6 +11,7 @@ parser.add_argument('dataDirectory' , action="store", help='Input Photo Director
 parser.add_argument('--hog' , action="store_true", default=False, help='Use hog features. If more than one feature selected, only first used.')
 parser.add_argument('--pcahog' , action="store_true", default=False, help='Use PCA hog features. If more than one feature selected, only first used.')
 parser.add_argument('--croppedhog' , action="store_true", default=False, help='Used cropped hog features.')
+parser.add_argument('--pcacroppedhog' , action="store_true", default=False, help='Used cropped hog features.')
 parser.add_argument('--daisy' , action="store_true", default=False, help='Use DAISY features, similar to sift.')
 parser.add_argument('--bright' , action="store_true", default=False, help='Use mean brightness feature. If more than one feature selected, only first used.')
 parser.add_argument('--random' , action="store_true", default=False, help='Use random subset of hog features. If more than one feature selected, only first used.')
@@ -82,6 +83,11 @@ def main():
       testFeatures= getDaisyFeatures(testData, "test data")
       OUTPUT_ID = OUTPUT_ID+"_daisy"
       FEATURE = "daisy"
+    elif args.pcacroppedhog:
+      trainFeatures = getPCACroppedHogFeatures(trainData, "train data")
+      testFeatures= getPCACroppedHogFeatures(testData, "test data")
+      OUTPUT_ID = OUTPUT_ID+"_pcacroppedhog"
+      FEATURE = "pcacroppedhog"
     else:
       print("No feature type selected")
       exit(1)

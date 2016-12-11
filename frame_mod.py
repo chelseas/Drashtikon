@@ -43,6 +43,29 @@ def getRandomFeatures(data, msg="data"):
     print("Done")
     return result
 
+
+def getPCACroppedHogFeatures(data, msg="data"):
+  print("Extracting PCA Cropped HOG features for "+ msg +"...")
+  rawHog = []
+  for x in data:
+    img = Image.fromarray(x)
+    width = img.size[0]
+    newDim = 90
+    offsetX = 35
+    offsetY = 5
+    img_l = img.crop((offsetX, offsetY, offsetX+newDim, newDim + offsetY))
+    img_r = img.crop((width-newDim-offsetX, offsetY, width-offsetX, newDim + offsetY))
+    assert(img_l.size[0] == img_r.size[0])
+    assert(img_l.size[1] == img_r.size[1])
+    featuresL = hog(np.array(img_l))
+    featuresR = hog(np.array(img_r))
+    combinedFeatures = np.concatenate((featuresL, featuresR))
+    rawHog.append(combinedFeatures)
+  pca = PCA(n_components=nComponents)
+  result = pca.fit_transform(rawHog) 
+  print("Done")
+  return result
+
 def getCroppedHogFeatures(data, msg="data"):
   print("Extracting Cropped HOG features for "+ msg +"...")
   result = []
@@ -127,6 +150,12 @@ def plotConfusionMatrix(trueLabels, predLabels, classNames, savePlot, timestamp,
         if not os.path.exists(outfolder):
             os.mkdir(outfolder)
         plt.savefig(os.path.join(outfolder, filename), bbox_inches='tight')
+        #norm.savefig(os.path.join(outfolder, "normalized_"+filename), bbox_inches='tight')
+        csvout = os.path.abspath(os.path.join('output', 'confusion_matrix_'+timestamp, 'confusion_matrix_'+modelName+'.csv'))
+        with open(csvout,'wb') as csvfile:
+          writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
+          for row in cnf_matrix:
+            writer.writerow(tuple(row))
       else:
         plt.show()
 
@@ -137,6 +166,7 @@ def getDiseaseName(folder):
             return d
     print("Disease not found")
     exit(1)
+
 
 def writeOverallResultsToCSV(results, target):
     outfile = os.path.abspath(os.path.join('output', target+'_overall_error.csv'))
@@ -152,24 +182,26 @@ def drawConfusionMatrix(cm, classes, normalize=False, title='Confusion matrix', 
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
     """
+    if normalize:
+        cm = cm.astype('float') / cm.astype('float').sum(axis=1)[:, np.newaxis]
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
     plt.yticks(tick_marks, classes)
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    
+        #np.round(cm, decimals=3)
+        #print(cm)
         #print("Normalized confusion matrix")
     #else:
         #print('Confusion matrix, without normalization')
 
     #print(cm)
-    thresh = cm.max() / 2.
+    thresh = cm.max() / 1.5
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, cm[i, j],
-                 horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
+        #print(cm[i,j])
+        plt.text(j, i, round(cm[i, j],4), horizontalalignment="center", color="white" if cm[i, j] > thresh else "black")
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
