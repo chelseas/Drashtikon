@@ -5,12 +5,18 @@ import re
 import argparse
 import csv
 from datetime import datetime
+import matplotlib.pyplot as plt
+
+# This script executes a training curve
+# BY DEFAULT, uses hog features and logistic regression (unbalanced)
 
 parser = argparse.ArgumentParser(description='Framework that trains all learning options.')
 parser.add_argument('class1Directory' , action="store", help='Input Photo Directory, relative path')
 parser.add_argument('class2Directory' , action="store", help='Input Photo Directory, relative path')
 parser.add_argument('number_k_folds', action="store", default=1, help='Input number of k-folds if you''d like to use for k-fold cross validation')
-parser.add_argument('--hog' , action="store_true", default=False, help='Use hog features. If more than one feature selected, only first used.')
+
+parser.add_argument('--hog' , action="store_true", default=True, help='Use hog features. If more than one feature selected, only first used.')
+
 parser.add_argument('--croppedhog' , action="store_true", default=False, help='Used cropped hog features.')
 parser.add_argument('--daisy' , action="store_true", default=False, help='Use DAISY features, similar to sift.')
 parser.add_argument('--bright' , action="store_true", default=False, help='Use mean brightness feature. If more than one feature selected, only first used.')
@@ -55,7 +61,7 @@ else:
 def main():
     # return indices of models being used
     if not args.all:
-      selectedModels = selectModels(MODELS)
+      selectedModels = [5] #selectModels(MODELS) # set default to just logistic regression (default model)
     else:
       selectedModels = range(len(MODELS))
 
@@ -133,26 +139,57 @@ def main():
         testFeatures1= getDaisyFeatures(rawTestData1, "test data")
         testFeatures2= getDaisyFeatures(rawTestData2, "test data")
 
+      # concatenates so that they keep the same second dimension
+      testFeats = np.concatenate((testFeatures1,testFeatures2), axis=0)
+
+
+      half = int(floor(len(trainFeatures)/2.0)) # halfway point
+      incr = int(floor(half/10.0))
+      print(incr)
       for i in selectedModels:
-        print("[ {} ] {}".format(i, MODELS[i].__name__))
-        model = MODELS[i](trainFeatures, trainLabels)
-        testPredictions1 = model.predict(testFeatures1)
-        testPredictions2 = model.predict(testFeatures2)
-        trainPredictions = model.predict(trainFeatures)
-        testError1 = calculateError(testPredictions1, testLabels1, 'Test Class 1')
-        testError2 = calculateError(testPredictions2, testLabels2, 'Test Class 2')
-        trainError = calculateError(trainPredictions, trainLabels, 'Train')
-        error_matrix[:,k-1,i] = [testError1, testError2, trainError]
+        # for subsets of the training data, train a model
+        train_curve_data = np.zeros((3,10)) # [[num train ex],[train err], [test err]]
+        for rep in range(1,11):
+            end_ind = min(half + incr*rep, len(trainFeatures))
+            print(end_ind)
+            # ensure training data has at least one example from each class
+            if ((1 in set(trainLabels)) and (2 in set(trainLabels))):
+                print("[ {} ] {}".format(i, MODELS[i].__name__))
+                model = MODELS[i](trainFeatures[0:end_ind], trainLabels[0:end_ind])
+                testPredictions = model.predict(testFeats)
+                #testPredictions2 = model.predict(testFeatures2)
+                trainPredictions = model.predict(trainFeatures[0:end_ind])
+                testError = calculateError(testPredictions, testLabels1+testLabels2, 'Test')
+                #testError2 = calculateError(testPredictions2, testLabels2, 'Test Class 2')
+                trainError = calculateError(trainPredictions, trainLabels, 'Train')
+                train_curve_data[:,rep] = [end_ind+1,trainEror, testError]
+                #error_matrix[:,k-1,i] = [testError1, testError2, trainError]
+            else:
+                print("ERROR: The training data subset being used doesn't have examples from both classes")
+
+        # write learning curve error to file for later use
+        writeLearningCurve(train_curve_data, 'train_curve_'+ MODELS[i].__name__)
+
+        #plot learning curve
+        x = train_curve_data[0,:]
+        y_trainData = train_curve_data[1,:]
+        y_testData = train_curve_data[2,:]
+        plt.plot(x,y_trainData, 'ro-', x,y_testData, 'bo--')
+        plt.title('Error as a Function of Training Set Size')
+        plt.xlabel('Number of Training Examples')
+        plt.ylabel('Error')
+        plt.show()
+
 
     # print average error over all folds
     # ['Diseases','Model','Features','Eval Set','Error Value']
-    avg_err = np.sum(error_matrix,axis=1)/float(folds)
-    with open(file_to_write_to,'a') as csvfile:
-      writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
-      for j in selectedModels:
-        writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[0],str(avg_err[0,j])])
-        writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[1],str(avg_err[1,j])])
-        writer.writerow([dis_set,str(MODELS[j].__name__),feat,'train',str(avg_err[2,j])])
+    #avg_err = np.sum(error_matrix,axis=1)/float(folds)
+    #with open(file_to_write_to,'a') as csvfile:
+    #  writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
+    #  for j in selectedModels:
+    #    writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[0],str(avg_err[0,j])])
+    #    writer.writerow([dis_set,str(MODELS[j].__name__),feat,diseases[1],str(avg_err[1,j])])
+    #    writer.writerow([dis_set,str(MODELS[j].__name__),feat,'train',str(avg_err[2,j])])
 
 if __name__ == '__main__':
   main()

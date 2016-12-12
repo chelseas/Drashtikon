@@ -28,9 +28,9 @@ def getPCAHogFeatures(trainData, testData, msg="data", nComponents=None):
     rawHogTrain = np.array([hog(x) for x in trainData])
     rawHogTest = np.array([hog(x) for x in testData])
     pca = PCA(n_components=nComponents)
-    pca.fit(rawHogTrain) 
+    pca.fit(rawHogTrain)
     train = pca.transform(rawHogTrain)
-    test = pca.transform(rawHogTest) 
+    test = pca.transform(rawHogTest)
     print("Done.")
     return (train, test)
 
@@ -81,9 +81,9 @@ def getPCACroppedHogFeatures(trainData, testData, msg="data",nComponents=None):
     rawHogTest.append(combinedFeatures)
 
   pca = PCA(n_components=nComponents)
-  pca.fit(rawHogTrain) 
+  pca.fit(rawHogTrain)
   train = pca.transform(rawHogTrain)
-  test = pca.transform(rawHogTest) 
+  test = pca.transform(rawHogTest)
   print("Done")
   return (train, test)
 
@@ -197,6 +197,14 @@ def writeOverallResultsToCSV(results, target):
         for row in results:
             writer.writerow(row)
 
+def writeLearningCurve(results, target):
+    outfile = os.path.abspath(os.path.join('output', target+'_overall_error.csv'))
+    with open(outfile,'wb') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(['Training Set Size 1', '2', '3', '4', '5', '6', '7', '8', '9', '10'])
+        for row in results:
+            writer.writerow(row)
+
 
 def drawConfusionMatrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
     """
@@ -211,7 +219,7 @@ def drawConfusionMatrix(cm, classes, normalize=False, title='Confusion matrix', 
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
     plt.yticks(tick_marks, classes)
-    
+
         #np.round(cm, decimals=3)
         #print(cm)
         #print("Normalized confusion matrix")
