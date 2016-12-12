@@ -6,6 +6,7 @@ import argparse
 import csv
 from datetime import datetime
 import matplotlib.pyplot as plt
+import random
 
 # This script executes a training curve
 # BY DEFAULT, uses hog features and logistic regression (unbalanced)
@@ -114,28 +115,35 @@ def main():
       (rawTestData1, testLabels1) = importData(testPath1, 1)
       (rawTestData2, testLabels2) = importData(testPath2, 2)
 
+      # shuffle train data and labels in a pseudo random way
+      # train labels and train data will STILL CORRESPOND don't worry
       trainLabels = trainLabels1 + trainLabels2
+      random.seed(0)
+      shuffle(trainLabels)
+      rawTrainData = rawTrainData1 + rawTrainData2
+      random.seed(0)
+      shuffle(rawTrainData)
 
       printInputStats(inputPath1, inputPath2, testPath1,  testPath2, len(rawTrainData1), len(rawTrainData2), len(rawTestData1), len(rawTestData2))
 
       if feat=="hog":
-        trainFeatures = getHogFeatures(rawTrainData1 + rawTrainData2, "train data")
+        trainFeatures = getHogFeatures(rawTrainData, "train data")
         testFeatures1= getHogFeatures(rawTestData1, "test data")
         testFeatures2= getHogFeatures(rawTestData2, "test data")
       elif feat=="bright":
-        trainFeatures = np.array(getMeanBrightness(rawTrainData1 + rawTrainData2, "train data")).reshape(-1, 1)
+        trainFeatures = np.array(getMeanBrightness(rawTrainData, "train data")).reshape(-1, 1)
         testFeatures1= np.array(getMeanBrightness(rawTestData1, "test data")).reshape(-1, 1)
         testFeatures2= np.array(getMeanBrightness(rawTestData2, "test data")).reshape(-1, 1)
       elif feat=="random":
-        trainFeatures = getRandomFeatures(rawTrainData1 + rawTrainData2, "train data")
+        trainFeatures = getRandomFeatures(rawTrainData, "train data")
         testFeatures1= getRandomFeatures(rawTestData1, "test data")
         testFeatures2= getRandomFeatures(rawTestData2, "test data")
       elif feat=="croppedhog":
-        trainFeatures = getCroppedHogFeatures(rawTrainData1 + rawTrainData2, "train data")
+        trainFeatures = getCroppedHogFeatures(rawTrainData, "train data")
         testFeatures1= getCroppedHogFeatures(rawTestData1, "test data")
         testFeatures2= getCroppedHogFeatures(rawTestData2, "test data")
       elif feat=="daisy":
-        trainFeatures = getDaisyFeatures(rawTrainData1 + rawTrainData2, "train data")
+        trainFeatures = getDaisyFeatures(rawTrainData, "train data")
         testFeatures1= getDaisyFeatures(rawTestData1, "test data")
         testFeatures2= getDaisyFeatures(rawTestData2, "test data")
 
@@ -162,23 +170,25 @@ def main():
                 testError = calculateError(testPredictions, testLabels1+testLabels2, 'Test')
                 #testError2 = calculateError(testPredictions2, testLabels2, 'Test Class 2')
                 trainError = calculateError(trainPredictions, trainLabels, 'Train')
-                train_curve_data[:,rep] = [end_ind+1,trainEror, testError]
+                train_curve_data[:,rep-1] = [end_ind+1,trainError, testError]
                 #error_matrix[:,k-1,i] = [testError1, testError2, trainError]
             else:
                 print("ERROR: The training data subset being used doesn't have examples from both classes")
 
         # write learning curve error to file for later use
-        writeLearningCurve(train_curve_data, 'train_curve_'+ MODELS[i].__name__)
+        writeLearningCurve(train_curve_data, 'train_curve_'+ str(MODELS[i].__name__) )
 
-        #plot learning curve
+        # plot learning curve
         x = train_curve_data[0,:]
         y_trainData = train_curve_data[1,:]
         y_testData = train_curve_data[2,:]
         plt.plot(x,y_trainData, 'ro-', x,y_testData, 'bo--')
-        plt.title('Error as a Function of Training Set Size')
+        t_str = 'Error vs. Training Set Size, ' + str(MODELS[i].__name__) + ', ' + dis_set + ', ' + feat
+        title(t_str)
         plt.xlabel('Number of Training Examples')
         plt.ylabel('Error')
-        plt.show()
+        #plt.show()
+        plt.savefig(t_str+'.png')
 
 
     # print average error over all folds
