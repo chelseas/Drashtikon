@@ -66,11 +66,11 @@ def main():
     else:
       selectedModels = range(len(MODELS))
 
-    outFolder = datetime.now().strftime("%m%d%H%M%S")
-    os.mkdir(os.path.join(os.getcwd(), 'output', outFolder))
+    #outFolder = datetime.now().strftime("%m%d%H%M%S")
+    #os.mkdir(os.path.join(os.getcwd(), 'output', outFolder))
     if args.hog:
         feat="hog"
-        file_to_write_to = os.path.join('output', outFolder, 'error_hog.csv')
+        #file_to_write_to = os.path.join('output', outFolder, 'error_hog.csv')
     elif args.bright:
         feat="bright"
         file_to_write_to = os.path.join('output', outFolder, 'error_bright.csv')
@@ -151,14 +151,14 @@ def main():
       testFeats = np.concatenate((testFeatures1,testFeatures2), axis=0)
 
 
-      half = int(floor(len(trainFeatures)/2.0)) # halfway point
-      incr = int(floor(half/10.0))
+      third = int(floor(len(trainFeatures)/4.0)) # one-third point
+      incr = int(floor((len(trainFeatures) - third)/10.0))
       print(incr)
       for i in selectedModels:
         # for subsets of the training data, train a model
         train_curve_data = np.zeros((3,10)) # [[num train ex],[train err], [test err]]
         for rep in range(1,11):
-            end_ind = min(half + incr*rep, len(trainFeatures))
+            end_ind = min(third + incr*rep, len(trainFeatures))
             print(end_ind)
             # ensure training data has at least one example from each class
             if ((1 in set(trainLabels)) and (2 in set(trainLabels))):
@@ -182,13 +182,16 @@ def main():
         x = train_curve_data[0,:]
         y_trainData = train_curve_data[1,:]
         y_testData = train_curve_data[2,:]
-        plt.plot(x,y_trainData, 'ro-', x,y_testData, 'bo--')
+        line_1, = plt.plot(x,y_trainData, 'ro-')
+        line_2, = plt.plot(x,y_testData, 'bo--')
+        plt.legend([line_1, line_2], ['Training Error', 'Test Error'])
         t_str = 'Error vs. Training Set Size, ' + str(MODELS[i].__name__) + ', ' + dis_set + ', ' + feat
-        title(t_str)
+        plt.title(t_str)
         plt.xlabel('Number of Training Examples')
         plt.ylabel('Error')
         #plt.show()
-        plt.savefig(t_str+'.png')
+        plt.savefig(t_str+'.png', dpi=300)
+
 
 
     # print average error over all folds

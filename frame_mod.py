@@ -132,7 +132,7 @@ def printInputStats(train1, train2, test1, test2, ntrain1, ntrain2, ntest1, ntes
   print("\t Class 2 -- {} examples from {}".format(ntest2, test2))
 
 def printMulticlassInputStats(trainDir, nTrain, testDir, nTest, label):
-  print("Class {} -----").format(label)
+  print("Class {} -----".format(label))
   print("\t Training: {} examples from {}".format(nTrain, trainDir))
   print("\t Test: {} examples from {}".format(nTest, testDir))
 
@@ -199,7 +199,7 @@ def writeOverallResultsToCSV(results, target):
 
 def writeLearningCurve(results, target):
     outfile = os.path.abspath(os.path.join('output', target+'_overall_error.csv'))
-    with open(outfile,'wb') as csvfile:
+    with open(outfile,'w') as csvfile:
         writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
         writer.writerow(['Training Set Size 1', '2', '3', '4', '5', '6', '7', '8', '9', '10'])
         for row in results:

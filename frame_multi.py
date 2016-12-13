@@ -26,7 +26,7 @@ def main():
       selectedModels = selectModels(MODELS)
     else:
       selectedModels = range(len(MODELS))
-  
+
     trainLabels = []
     testLabels = []
     trainData = []
@@ -40,7 +40,7 @@ def main():
       classNames.append(getDiseaseName(diseasePath.split(os.sep)[-1]))
       trainPath = os.path.join(diseasePath, "train")
       testPath = os.path.join(diseasePath, "test")
-      (rawTrainData, classTrainLabels) = importData(trainPath, label)  
+      (rawTrainData, classTrainLabels) = importData(trainPath, label)
       (rawTestData, classTestLabels) = importData(testPath, label)
       trainLabels = trainLabels + classTrainLabels
       testLabels = testLabels + classTestLabels
@@ -99,7 +99,7 @@ def main():
       testError = calculateError(testPredictions, testLabels, 'Test')
       trainError = calculateError(trainPredictions, trainLabels, 'Train')
       results.append((trainError, testError, MODELS[i].__name__, FEATURE))
-      if args.plot or args.saveplot:       
+      if args.plot or args.saveplot:
         plotConfusionMatrix(testLabels, testPredictions, classNames, args.saveplot, timestamp=OUTPUT_ID, modelName=MODELS[i].__name__)
       writeOverallResultsToCSV(results, OUTPUT_ID)
 
