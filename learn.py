@@ -54,12 +54,12 @@ def rbfCVSVM(train_data, train_labels, test_data, OUTPUT_ID):
     pca = decomposition.PCA()
     pipe = Pipeline(steps=[('pca', pca), ('svc', svc)])
     N = len(train_data[0])
-    n_components = [N/100, N/50,  N/22, N]
+    n_components = [N/50, N/22]
     
     # Initialize range of SVM params     
 
-    C_range = np.logspace(-2, 10, 10)     #TODO change 10
-    gamma_range = np.logspace(-9, 3, 10) #TODO change 10
+    C_range = np.logspace(-2, 10, 7)     #TODO change 10
+    gamma_range = np.logspace(-9, 3, 7) #TODO change 10
     class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
@@ -91,10 +91,10 @@ def linearCVSVM(train_data, train_labels, test_data, OUTPUT_ID):
     pca = decomposition.PCA()
     pipe = Pipeline(steps=[('pca', pca), ('svc', svc)])
     N = len(train_data[0])
-    n_components = [N/100, N/50,  N/22, N]
+    n_components = [N/50, N/22]
 
     # Initialize range of SVM params
-    C_range = np.logspace(-2, 10, 10)
+    C_range = np.logspace(-2, 10, 7)
     class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
@@ -126,10 +126,10 @@ def CVLogisticRegression(train_data, train_labels, test_data, OUTPUT_ID):
     pca = decomposition.PCA()
     pipe = Pipeline(steps=[('pca', pca), ('logistic', logistic)])
     N = len(train_data[0])
-    n_components = [N/100, N/50,  N/22, N]
+    n_components = [N/50, N/22]
 
     # Initialize range of SVM params
-    C_range = np.logspace(1, 10, 10)
+    C_range = np.logspace(1, 10, 7)
     class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
