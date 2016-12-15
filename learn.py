@@ -55,7 +55,7 @@ def rbfCVSVM(train_data, train_labels, test_data):
     n_components = [N/100, N/50,  N/22, N]
     
 #TODO DELETE
-    n_components = [10]
+    #n_components = [10]
 
     # Initialize range of SVM params     
 
