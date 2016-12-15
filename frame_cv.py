@@ -94,7 +94,7 @@ def main():
     results = []
     for i in selectedModels:
       print("[ {} ] {}".format(i, CV_MODELS[i].__name__))
-      cv_results = CV_MODELS[i](trainFeatures, trainLabels, testFeatures)
+      cv_results = CV_MODELS[i](trainFeatures, trainLabels, testFeatures, OUTPUT_ID)
       model = cv_results["model"]
       fitTrainFeatures = cv_results["train_data"]
       fitTestFeatures = cv_results["test_data"]    

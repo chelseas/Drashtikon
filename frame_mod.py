@@ -9,6 +9,7 @@ import copy
 from skimage.feature import hog, daisy
 import sys
 import matplotlib.pyplot as plt
+plt.switch_backend('agg') #for ec2 compataibility
 from sklearn.decomposition import PCA
 import csv
 import json

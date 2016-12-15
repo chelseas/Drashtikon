@@ -43,8 +43,10 @@ def logisticRegressionBalanced(train_data, train_labels):
 
 ## Cross Validation Hyperparameter Setting
 
+NUM_CORES =  -1
+#NUM_CORES = 62
 
-def rbfCVSVM(train_data, train_labels, test_data):
+def rbfCVSVM(train_data, train_labels, test_data, OUTPUT_ID):
     # Model Initializer
     svc = svm.SVC()
 
@@ -54,13 +56,10 @@ def rbfCVSVM(train_data, train_labels, test_data):
     N = len(train_data[0])
     n_components = [N/100, N/50,  N/22, N]
     
-#TODO DELETE
-    n_components = [10]
-
     # Initialize range of SVM params     
 
-    C_range = np.logspace(-2, 10, 1)     #TODO change 10
-    gamma_range = np.logspace(-9, 3, 1) #TODO change 10
+    C_range = np.logspace(-2, 10, 10)     #TODO change 10
+    gamma_range = np.logspace(-9, 3, 10) #TODO change 10
     class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
@@ -68,7 +67,7 @@ def rbfCVSVM(train_data, train_labels, test_data):
 
     # CV Params
     cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
-    grid = GridSearchCV(pipe, param_grid=rbf_param_grid, cv=cv, n_jobs=60, verbose=3)
+    grid = GridSearchCV(pipe, param_grid=rbf_param_grid, cv=cv, n_jobs=NUM_CORES, verbose=3)
 
     # Search for hyper paramters
     grid.fit(train_data, train_labels)
@@ -81,10 +80,10 @@ def rbfCVSVM(train_data, train_labels, test_data):
     fit_test_data = best_pca.transform(test_data) 
     model = svm.SVC(kernel=grid.best_params_["svc__kernel"], C=grid.best_params_["svc__C"], gamma=grid.best_params_["svc__gamma"], class_weight=grid.best_params_["svc__class_weight"])
     model.fit(fit_train_data, train_labels)
-    writeCVResultstoCSV(grid.cv_results_, "rbfSVM")
+    writeCVResultstoCSV(grid.cv_results_, "rbfSVM_"+OUTPUT_ID)
     return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
 
-def linearCVSVM(train_data, train_labels, test_data):
+def linearCVSVM(train_data, train_labels, test_data, OUTPUT_ID):
     # Model Initializer
     svc = svm.LinearSVC()
 
@@ -103,7 +102,7 @@ def linearCVSVM(train_data, train_labels, test_data):
 
     # CV Params
     cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
-    grid = GridSearchCV(pipe, param_grid=linear_param_grid, cv=cv, n_jobs=-1, verbose=3)
+    grid = GridSearchCV(pipe, param_grid=linear_param_grid, cv=cv, n_jobs=NUM_CORES, verbose=3)
 
     # Search for hyper paramters
     grid.fit(train_data, train_labels)
@@ -116,10 +115,10 @@ def linearCVSVM(train_data, train_labels, test_data):
     fit_test_data = best_pca.transform(test_data) 
     model = svm.SVC(C=grid.best_params_["svc__C"], class_weight=grid.best_params_["svc__class_weight"])
     model.fit(fit_train_data, train_labels)
-    writeCVResultstoCSV(grid.cv_results_, "linearSVM")
+    writeCVResultstoCSV(grid.cv_results_, "linearSVM_"+OUTPUT_ID)
     return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
 
-def CVLogisticRegression(train_data, train_labels, test_data):
+def CVLogisticRegression(train_data, train_labels, test_data, OUTPUT_ID):
     # Model Initializer
     logistic = linear_model.LogisticRegression()
 
@@ -138,7 +137,7 @@ def CVLogisticRegression(train_data, train_labels, test_data):
 
     # CV Params
     cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
-    grid = GridSearchCV(pipe, param_grid=logistic_param_grid, cv=cv, n_jobs=-1, verbose=3)
+    grid = GridSearchCV(pipe, param_grid=logistic_param_grid, cv=cv, n_jobs=NUM_CORES, verbose=3)
 
     # Search for hyper paramters
     grid.fit(train_data, train_labels)
@@ -151,7 +150,7 @@ def CVLogisticRegression(train_data, train_labels, test_data):
     fit_test_data = best_pca.transform(test_data) 
     model = linear_model.LogisticRegression(C=grid.best_params_["logistic__C"], class_weight=grid.best_params_["logistic__class_weight"])
     model.fit(fit_train_data, train_labels)
-    writeCVResultstoCSV(grid.cv_results_, "logisticRegression")
+    writeCVResultstoCSV(grid.cv_results_, "logisticRegression_"+OUTPUT_ID)
     return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
 
 
