@@ -104,7 +104,7 @@ def main():
       fpr = dict()
       tpr = dict()
       roc_auc = dict()
-      #plt.figure()
+      plt.figure()
       for i in range(5):
           fpr[i], tpr[i], _ = roc_curve(ylabel_binary[:,i], y_score_test[:,i])
           roc_auc[i] = auc(fpr[i], tpr[i])
