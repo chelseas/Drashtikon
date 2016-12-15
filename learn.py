@@ -52,11 +52,14 @@ def rbfCVSVM(train_data, train_labels, test_data):
     pipe = Pipeline(steps=[('pca', pca), ('svc', svc)])
     N = len(train_data[0])
     n_components = [N/100, N/50,  N/22, N]
+    
+#TODO DELETE
     n_components = [10]
 
-    # Initialize range of SVM params
-    C_range = np.logspace(-2, 10, 10)
-    gamma_range = np.logspace(-9, 3, 10)
+    # Initialize range of SVM params     
+
+    C_range = np.logspace(-2, 10, 1)     #TODO change 10
+    gamma_range = np.logspace(-9, 3, 1) #TODO change 10
     class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
