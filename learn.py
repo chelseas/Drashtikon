@@ -29,12 +29,6 @@ def linearSVMBalanced(train_data, train_labels):
     model.fit(train_data, train_labels)
     return model
 
-
-def linearSVM(train_data, train_labels):
-    model = svm.SVC(kernel='linear')
-    model.fit(train_data, train_labels)
-    return model
-
 # Logistic Regression
 def logisticRegression(train_data, train_labels):
     model = linear_model.LogisticRegression()
@@ -56,12 +50,14 @@ def rbfCVSVM(train_data, train_labels, test_data):
     #Initialize transform Pipeline (PCA)
     pca = decomposition.PCA()
     pipe = Pipeline(steps=[('pca', pca), ('svc', svc)])
-    n_components = [500, 750, 1000, 2000, len(train_data[0])]
+    N = len(train_data[0])
+    n_components = [N/100, N/50,  N/22, N]
+    n_components = [10]
 
     # Initialize range of SVM params
-    C_range = np.logspace(-2, 10, 13)
-    gamma_range = np.logspace(-9, 3, 13)
-    class_weight_range = ['balanced', None]
+    C_range = np.logspace(-2, 10, 10)
+    gamma_range = np.logspace(-9, 3, 10)
+    class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
     rbf_param_grid = dict(pca__n_components=n_components, svc__gamma=gamma_range, svc__C=C_range, svc__kernel=['rbf'], svc__class_weight=class_weight_range)
@@ -75,13 +71,13 @@ def rbfCVSVM(train_data, train_labels, test_data):
     print("The best parameters are %s with a score of %0.2f" % (grid.best_params_, grid.best_score_))
     
     # Return a model trained on these parameters.
-    best_pca = PCA(n_components=grid.best_params_["pca__n_components"])
+    best_pca = decomposition.PCA(n_components=grid.best_params_["pca__n_components"])
     best_pca.fit(train_data) 
-    fit_train_data = pca.transform(train_data)
-    fit_test_data = pca.transform(test_data) 
+    fit_train_data = best_pca.transform(train_data)
+    fit_test_data = best_pca.transform(test_data) 
     model = svm.SVC(kernel=grid.best_params_["svc__kernel"], C=grid.best_params_["svc__C"], gamma=grid.best_params_["svc__gamma"], class_weight=grid.best_params_["svc__class_weight"])
     model.fit(fit_train_data, train_labels)
-    return dict(model=model, test_data=fit_test_data, train_data=fit_train_data)
+    return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
 
 def linearCVSVM(train_data, train_labels, test_data):
     # Model Initializer
@@ -90,11 +86,12 @@ def linearCVSVM(train_data, train_labels, test_data):
     #Initialize transform Pipeline (PCA)
     pca = decomposition.PCA()
     pipe = Pipeline(steps=[('pca', pca), ('svc', svc)])
-    n_components = [500, 750, 1000, 2000, len(train_data[0])]
+    N = len(train_data[0])
+    n_components = [N/100, N/50,  N/22, N]
 
     # Initialize range of SVM params
-    C_range = np.logspace(-2, 10, 13)
-    class_weight_range = ['balanced', None]
+    C_range = np.logspace(-2, 10, 10)
+    class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
     linear_param_grid = dict(pca__n_components=n_components, svc__C=C_range, svc__class_weight=class_weight_range)
@@ -108,13 +105,13 @@ def linearCVSVM(train_data, train_labels, test_data):
     print("The best parameters are %s with a score of %0.2f" % (grid.best_params_, grid.best_score_))
     
     # Return a model trained on these parameters.
-    best_pca = PCA(n_components=grid.best_params_["pca__n_components"])
+    best_pca = decomposition.PCA(n_components=grid.best_params_["pca__n_components"])
     best_pca.fit(train_data) 
-    fit_train_data = pca.transform(train_data)
-    fit_test_data = pca.transform(test_data) 
+    fit_train_data = best_pca.transform(train_data)
+    fit_test_data = best_pca.transform(test_data) 
     model = svm.SVC(C=grid.best_params_["svc__C"], class_weight=grid.best_params_["svc__class_weight"])
     model.fit(fit_train_data, train_labels)
-    return dict(model=model, test_data=fit_test_data, train_data=fit_train_data)
+    return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
 
 def CVLogisticRegression(train_data, train_labels, test_data):
     # Model Initializer
@@ -123,11 +120,12 @@ def CVLogisticRegression(train_data, train_labels, test_data):
     #Initialize transform Pipeline (PCA)
     pca = decomposition.PCA()
     pipe = Pipeline(steps=[('pca', pca), ('logistic', logistic)])
-    n_components = [500, 750, 1000, 2000, len(train_data[0])]
+    N = len(train_data[0])
+    n_components = [N/100, N/50,  N/22, N]
 
     # Initialize range of SVM params
     C_range = np.logspace(1, 10, 10)
-    class_weight_range = ['balanced', None]
+    class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
     logistic_param_grid = dict(pca__n_components=n_components, logistic__C=C_range, logistic__class_weight=class_weight_range)
@@ -141,13 +139,13 @@ def CVLogisticRegression(train_data, train_labels, test_data):
     print("The best parameters are %s with a score of %0.2f" % (grid.best_params_, grid.best_score_))
     
     # Return a model trained on these parameters.
-    best_pca = PCA(n_components=grid.best_params_["pca__n_components"])
+    best_pca = decomposition.PCA(n_components=grid.best_params_["pca__n_components"])
     best_pca.fit(train_data) 
-    fit_train_data = pca.transform(train_data)
-    fit_test_data = pca.transform(test_data) 
+    fit_train_data = best_pca.transform(train_data)
+    fit_test_data = best_pca.transform(test_data) 
     model = linear_model.LogisticRegression(C=grid.best_params_["logistic__C"], class_weight=grid.best_params_["logistic__class_weight"])
     model.fit(fit_train_data, train_labels)
-    return dict(model=model, test_data=fit_test_data, train_data=fit_train_data)
+    return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
 
 
 

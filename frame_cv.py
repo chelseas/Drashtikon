@@ -94,18 +94,19 @@ def main():
     results = []
     for i in selectedModels:
       print("[ {} ] {}".format(i, CV_MODELS[i].__name__))
-      results = CV_MODELS[i](trainFeatures, trainLabels)
-      model = results["model"]
-      testFeatures = results["test_data"]
-      trainFeatures = results["train_data"]
+      cv_results = CV_MODELS[i](trainFeatures, trainLabels, testFeatures)
+      model = cv_results["model"]
+      testFeatures = cv_results["test_data"]
+      trainFeatures = cv_results["train_data"]
+      params = cv_results["params"]
 
       trainPredictions = model.predict(trainFeatures)
       testPredictions = model.predict(testFeatures)
       testError = calculateError(testPredictions, testLabels, 'Test')
       trainError = calculateError(trainPredictions, trainLabels, 'Train')
-      f1_score = metrics.f1_score(testLabels, testPredictions)
+      f1_score = metrics.f1_score(testLabels, testPredictions, average='micro')
 
-      results.append((trainError, testError, CV_MODELS[i].__name__, FEATURE, f1_score))
+      results.append((trainError, testError, CV_MODELS[i].__name__, FEATURE, f1_score, str(params)))
       if args.plot or args.saveplot:       
         plotConfusionMatrix(testLabels, testPredictions, classNames, args.saveplot, timestamp=OUTPUT_ID, modelName=CV_MODELS[i].__name__)
       writeOverallResultsToCSV(results, OUTPUT_ID)
