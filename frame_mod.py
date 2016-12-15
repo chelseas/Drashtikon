@@ -27,7 +27,7 @@ def getPCAHogFeatures(trainData, testData, msg="data", nComponents=None):
     print("Extracting PCA HOG features for "+ msg + " with {} components").format("default" if nComponents is None else nComponents)
     rawHogTrain = np.array([hog(x) for x in trainData])
     rawHogTest = np.array([hog(x) for x in testData])
-    pca = PCA(n_components=nComponents)
+    pca = PCA(n_components=1000)
     pca.fit(rawHogTrain) 
     train = pca.transform(rawHogTrain)
     test = pca.transform(rawHogTest) 
