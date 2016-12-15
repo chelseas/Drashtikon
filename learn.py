@@ -55,7 +55,7 @@ def rbfCVSVM(train_data, train_labels, test_data):
     n_components = [N/100, N/50,  N/22, N]
     
 #TODO DELETE
-    #n_components = [10]
+    n_components = [10]
 
     # Initialize range of SVM params     
 
@@ -68,7 +68,7 @@ def rbfCVSVM(train_data, train_labels, test_data):
 
     # CV Params
     cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
-    grid = GridSearchCV(pipe, param_grid=rbf_param_grid, cv=cv, n_jobs=-1, verbose=3)
+    grid = GridSearchCV(pipe, param_grid=rbf_param_grid, cv=cv, n_jobs=60, verbose=3)
 
     # Search for hyper paramters
     grid.fit(train_data, train_labels)
