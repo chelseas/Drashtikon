@@ -5,6 +5,9 @@ import re
 import argparse
 import csv
 from datetime import datetime
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc
+from sklearn.preprocessing import label_binarize
 
 parser = argparse.ArgumentParser(description='Framework that trains all learning options.')
 parser.add_argument('dataDirectory' , action="store", help='Input Photo Directory, relative path')
@@ -26,7 +29,7 @@ def main():
       selectedModels = selectModels(MODELS)
     else:
       selectedModels = range(len(MODELS))
-  
+
     trainLabels = []
     testLabels = []
     trainData = []
@@ -40,7 +43,7 @@ def main():
       classNames.append(getDiseaseName(diseasePath.split(os.sep)[-1]))
       trainPath = os.path.join(diseasePath, "train")
       testPath = os.path.join(diseasePath, "test")
-      (rawTrainData, classTrainLabels) = importData(trainPath, label)  
+      (rawTrainData, classTrainLabels) = importData(trainPath, label)
       (rawTestData, classTestLabels) = importData(testPath, label)
       trainLabels = trainLabels + classTrainLabels
       testLabels = testLabels + classTestLabels
@@ -94,12 +97,28 @@ def main():
     for i in selectedModels:
       print("[ {} ] {}".format(i, MODELS[i].__name__))
       model = MODELS[i](trainFeatures, trainLabels)
+      #y_score_train = model.decision_function(trainFeatures)
+      ylabel_binary = label_binarize(testLabels, classes=[0, 1, 2, 3, 4])
+      y_score_test = model.decision_function(testFeatures)
+      print(y_score_test)
+      fpr = dict()
+      tpr = dict()
+      roc_auc = dict()
+      #plt.figure()
+      for i in range(5):
+          fpr[i], tpr[i], _ = roc_curve(ylabel_binary[:,i], y_score_test[:,i])
+          roc_auc[i] = auc(fpr[i], tpr[i])
+          plt.plot(fpr[i],tpr[i], label='ROC curve with area %0.2f for class %s' % (roc_auc[i], classNames[i]) )
+      fig_str = 'ROC ' + str(MODELS[i].__name__) + ', ' + FEATURE
+      plt.savefig(fig_str+'.png', dpi=300)
+
+
       trainPredictions = model.predict(trainFeatures)
       testPredictions = model.predict(testFeatures)
       testError = calculateError(testPredictions, testLabels, 'Test')
       trainError = calculateError(trainPredictions, trainLabels, 'Train')
       results.append((trainError, testError, MODELS[i].__name__, FEATURE))
-      if args.plot or args.saveplot:       
+      if args.plot or args.saveplot:
         plotConfusionMatrix(testLabels, testPredictions, classNames, args.saveplot, timestamp=OUTPUT_ID, modelName=MODELS[i].__name__)
       writeOverallResultsToCSV(results, OUTPUT_ID)
 

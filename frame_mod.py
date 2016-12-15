@@ -28,9 +28,9 @@ def getPCAHogFeatures(trainData, testData, msg="data", nComponents=None):
     rawHogTrain = np.array([hog(x) for x in trainData])
     rawHogTest = np.array([hog(x) for x in testData])
     pca = PCA(n_components=1000)
-    pca.fit(rawHogTrain) 
+    pca.fit(rawHogTrain)
     train = pca.transform(rawHogTrain)
-    test = pca.transform(rawHogTest) 
+    test = pca.transform(rawHogTest)
     print("Done.")
     return (train, test)
 
@@ -81,9 +81,9 @@ def getPCACroppedHogFeatures(trainData, testData, msg="data",nComponents=None):
     rawHogTest.append(combinedFeatures)
 
   pca = PCA(n_components=nComponents)
-  pca.fit(rawHogTrain) 
+  pca.fit(rawHogTrain)
   train = pca.transform(rawHogTrain)
-  test = pca.transform(rawHogTest) 
+  test = pca.transform(rawHogTest)
   print("Done")
   return (train, test)
 
@@ -132,7 +132,7 @@ def printInputStats(train1, train2, test1, test2, ntrain1, ntrain2, ntest1, ntes
   print("\t Class 2 -- {} examples from {}".format(ntest2, test2))
 
 def printMulticlassInputStats(trainDir, nTrain, testDir, nTest, label):
-  print("Class {} -----").format(label)
+  print("Class {} -----".format(label))
   print("\t Training: {} examples from {}".format(nTrain, trainDir))
   print("\t Test: {} examples from {}".format(nTest, testDir))
 
@@ -211,7 +211,7 @@ def drawConfusionMatrix(cm, classes, normalize=False, title='Confusion matrix', 
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
     plt.yticks(tick_marks, classes)
-    
+
         #np.round(cm, decimals=3)
         #print(cm)
         #print("Normalized confusion matrix")
