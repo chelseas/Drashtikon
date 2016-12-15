@@ -6,6 +6,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.pipeline import Pipeline
 import numpy as np
+from frame_mod import writeCVResultstoCSV
 
 # RBF SVMs
 def rbfSVM(train_data, train_labels):
@@ -80,6 +81,7 @@ def rbfCVSVM(train_data, train_labels, test_data):
     fit_test_data = best_pca.transform(test_data) 
     model = svm.SVC(kernel=grid.best_params_["svc__kernel"], C=grid.best_params_["svc__C"], gamma=grid.best_params_["svc__gamma"], class_weight=grid.best_params_["svc__class_weight"])
     model.fit(fit_train_data, train_labels)
+    writeCVResultstoCSV(grid.cv_results_, "rbfSVM")
     return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
 
 def linearCVSVM(train_data, train_labels, test_data):
@@ -114,6 +116,7 @@ def linearCVSVM(train_data, train_labels, test_data):
     fit_test_data = best_pca.transform(test_data) 
     model = svm.SVC(C=grid.best_params_["svc__C"], class_weight=grid.best_params_["svc__class_weight"])
     model.fit(fit_train_data, train_labels)
+    writeCVResultstoCSV(grid.cv_results_, "linearSVM")
     return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
 
 def CVLogisticRegression(train_data, train_labels, test_data):
@@ -148,6 +151,7 @@ def CVLogisticRegression(train_data, train_labels, test_data):
     fit_test_data = best_pca.transform(test_data) 
     model = linear_model.LogisticRegression(C=grid.best_params_["logistic__C"], class_weight=grid.best_params_["logistic__class_weight"])
     model.fit(fit_train_data, train_labels)
+    writeCVResultstoCSV(grid.cv_results_, "logisticRegression")
     return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
 
 

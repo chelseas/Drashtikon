@@ -11,6 +11,8 @@ import sys
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import csv
+import json
+import pandas as pd
 
 import itertools
 from sklearn.metrics import confusion_matrix
@@ -196,6 +198,11 @@ def writeOverallResultsToCSV(results, target):
         writer.writerow(['train_error', 'test_error', 'model', 'feature', 'f1_score'])
         for row in results:
             writer.writerow(row)
+
+def writeCVResultstoCSV(results, target):
+  outfile = os.path.abspath(os.path.join('output', target+'_cv_results.csv'))
+  pd.DataFrame.from_dict(results).to_csv(outfile)
+    
 
 
 def drawConfusionMatrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):

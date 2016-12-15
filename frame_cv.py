@@ -96,12 +96,12 @@ def main():
       print("[ {} ] {}".format(i, CV_MODELS[i].__name__))
       cv_results = CV_MODELS[i](trainFeatures, trainLabels, testFeatures)
       model = cv_results["model"]
-      testFeatures = cv_results["test_data"]
-      trainFeatures = cv_results["train_data"]
+      fitTrainFeatures = cv_results["train_data"]
+      fitTestFeatures = cv_results["test_data"]    
       params = cv_results["params"]
 
-      trainPredictions = model.predict(trainFeatures)
-      testPredictions = model.predict(testFeatures)
+      trainPredictions = model.predict(fitTrainFeatures)
+      testPredictions = model.predict(fitTestFeatures)
       testError = calculateError(testPredictions, testLabels, 'Test')
       trainError = calculateError(trainPredictions, trainLabels, 'Train')
       f1_score = metrics.f1_score(testLabels, testPredictions, average='micro')
