@@ -10,12 +10,12 @@ from frame_mod import writeCVResultstoCSV
 
 # RBF SVMs
 def rbfSVM(train_data, train_labels):
-    model = svm.SVC(kernel='rbf', C=1000.0, gamma=1.0)
+    model = svm.SVC(kernel='rbf', C=1000.0, gamma=1.0, decision_function_shape='ovr')
     model.fit(train_data, train_labels)
     return model
 
 def rbfSVMBalanced(train_data, train_labels):
-    model = svm.SVC(kernel='rbf', class_weight='balanced', C=1000.0, gamma=1.0)
+    model = svm.SVC(kernel='rbf', class_weight='balanced', C=1000.0, gamma=1.0, decision_function_shape='ovr')
     model.fit(train_data, train_labels)
     return model
 
