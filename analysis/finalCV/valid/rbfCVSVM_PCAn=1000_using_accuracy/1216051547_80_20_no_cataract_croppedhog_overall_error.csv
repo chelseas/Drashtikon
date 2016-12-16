@@ -1,0 +1,2 @@
+train_error,test_error,model,feature,f1_score
+0.003715630418627694,0.22664015904572565,rbfCVSVM,croppedhog,0.77335984095427435,|{'svc__gamma': 0.10000000000000001, 'svc__class_weight': None, 'svc__kernel': 'rbf', 'pca__n_components': 1000, 'svc__C': 100000000.0}|

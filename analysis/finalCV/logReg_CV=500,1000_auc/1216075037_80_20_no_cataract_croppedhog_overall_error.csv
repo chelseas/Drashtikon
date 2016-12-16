@@ -1,0 +1,2 @@
+train_error,test_error,model,feature,f1_score
+0.17810255139955414,0.2644135188866799,CVLogisticRegression,croppedhog,0.73558648111332015,|{'logistic__C': 1.0, 'pca__n_components': 1000, 'logistic__class_weight': None}|

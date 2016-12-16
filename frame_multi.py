@@ -84,6 +84,7 @@ def main():
       FEATURE = "daisy"
     elif args.pcacroppedhog:
       trainFeatures, testFeatures = getPCACroppedHogFeatures(trainData=trainData, testData=testData, msg="train/test data", nComponents=len(trainData))
+      print(len(trainFeatures[0]))
       OUTPUT_ID = OUTPUT_ID+"_pcacroppedhog"
       FEATURE = "pcacroppedhog"
     else:

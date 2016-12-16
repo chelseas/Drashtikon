@@ -1,0 +1,2 @@
+train_error,test_error,model,feature,f1_score
+0.26405746841714145,0.29025844930417494,linearCVSVM,croppedhog,0.70974155069582512,|{'svc__class_weight': None, 'pca__n_components': 1000, 'svc__C': 0.01}|
