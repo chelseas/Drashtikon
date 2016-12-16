@@ -5,6 +5,8 @@ import re
 import argparse
 import csv
 from datetime import datetime
+from sklearn.preprocessing import label_binarize
+from sklearn.metrics import roc_curve, auc, f1_score
 
 parser = argparse.ArgumentParser(description='Framework that trains all learning options.')
 parser.add_argument('dataDirectory' , action="store", help='Input Photo Directory, relative path')
@@ -99,10 +101,52 @@ def main():
       testPredictions = model.predict(testFeatures)
       testError = calculateError(testPredictions, testLabels, 'Test')
       trainError = calculateError(trainPredictions, trainLabels, 'Train')
-      results.append((trainError, testError, MODELS[i].__name__, FEATURE))
+
+      ## START AUC
+      tpr_fpr_mat = []
+      ylabel_binary = label_binarize(testLabels, classes=[0, 1, 2, 3, 4])
+      n_classes = ylabel_binary.shape[1]
+      y_score_test = model.decision_function(testFeatures)
+      fpr = dict()
+      tpr = dict()
+      roc_auc = dict()
+      plt.figure()
+      handle_array = []
+      for j in range(5):
+          fpr[j], tpr[j], _ = roc_curve(ylabel_binary[:,j], y_score_test[:,j])
+          roc_auc[j] = auc(fpr[j], tpr[j])
+          h, = plt.plot(fpr[j],tpr[j], label='ROC curve with area %0.2f for class %s' % (roc_auc[j], classNames[j]) )
+          handle_array.append(h)
+          tpr_fpr_mat.append(fpr[j])
+          tpr_fpr_mat.append(tpr[j])
+      #tpr_fpr_mat = np.ndarray(tpr_fpr_mat)
+      plt.legend(handles=handle_array, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+      t_str = 'ROC ' + str(MODELS[i].__name__) + ' ' + FEATURE
+      plt.title(t_str)
+      fig_str = 'output/ROC ' + str(MODELS[i].__name__) + ' ' + FEATURE + ' ' + OUTPUT_ID
+      plt.savefig(fig_str+'.png', dpi=300,bbox_inches='tight')
+      #writeROCResultsToCSV(tpr_fpr_mat, fig_str)
+
+      # First aggregate all false positive rates
+      all_fpr = np.unique(np.concatenate([fpr[j] for j in range(n_classes)]))
+
+      # Then interpolate all ROC curves at this points
+      mean_tpr = np.zeros_like(all_fpr)
+      for j in range(n_classes):
+          mean_tpr += interp(all_fpr, fpr[j], tpr[j])
+
+      # Finally average it and compute AUC
+      mean_tpr /= n_classes
+
+      fpr["macro"] = all_fpr
+      tpr["macro"] = mean_tpr
+      auc_avg = auc(fpr["macro"], tpr["macro"])
+      ## END AUC
+      results.append((trainError, testError, MODELS[i].__name__, FEATURE, f1_score(testLabels, testPredictions, average='micro'), auc_avg))
       if args.plot or args.saveplot:       
         plotConfusionMatrix(testLabels, testPredictions, classNames, args.saveplot, timestamp=OUTPUT_ID, modelName=MODELS[i].__name__)
       writeOverallResultsToCSV(results, OUTPUT_ID)
+
 
 if __name__ == '__main__':
   main()

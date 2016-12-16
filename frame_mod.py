@@ -196,7 +196,7 @@ def writeOverallResultsToCSV(results, target):
     outfile = os.path.abspath(os.path.join('output', target+'_overall_error.csv'))
     with open(outfile,'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter=',',quotechar='|',quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(['train_error', 'test_error', 'model', 'feature', 'f1_score'])
+        writer.writerow(['train_error', 'test_error', 'model', 'feature', 'f1_score', 'auc'])
         for row in results:
             writer.writerow(row)
 
