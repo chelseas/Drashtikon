@@ -1,5 +1,5 @@
 from frame_mod import *
-from learn import *
+from learn_c import *
 import numpy as np
 import re
 import argparse

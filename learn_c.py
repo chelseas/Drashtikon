@@ -7,6 +7,9 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.pipeline import Pipeline
 import numpy as np
 from frame_mod import writeCVResultstoCSV
+from sklearn.preprocessing import label_binarize
+from new_scoring_func import multi_roc, multi_roc2
+
 
 # RBF SVMs
 def rbfSVM(train_data, train_labels):
@@ -55,20 +58,20 @@ def rbfCVSVM(train_data, train_labels, test_data, OUTPUT_ID):
     pipe = Pipeline(steps=[('pca', pca), ('svc', svc)])
     N = len(train_data[0])
     #n_components = [N/22]
-    n_components = [1000]    
+    n_components = [1000,2000]    
 
     # Initialize range of SVM params     
 
-    C_range = np.logspace(-2, 10, 7)     #TODO change 10
-    gamma_range = np.logspace(-9, 3, 7) #TODO change 10
+    C_range = np.logspace(3, 10, 8)     #TODO change 10
+    gamma_range = np.logspace(-2, 3, 6) #TODO change 10
     class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
-    rbf_param_grid = dict(pca__n_components=n_components, svc__gamma=gamma_range, svc__C=C_range, svc__kernel=['rbf'], svc__class_weight=class_weight_range)
+    rbf_param_grid = dict(pca__n_components=n_components, svc__gamma=gamma_range, svc__C=C_range, svc__kernel=['rbf'], svc__class_weight=class_weight_range, svc__decision_function_shape=['ovr'])
 
     # CV Params
     cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
-    grid = GridSearchCV(pipe, param_grid=rbf_param_grid, cv=cv, n_jobs=NUM_CORES, verbose=3, scoring='roc_auc')
+    grid = GridSearchCV(pipe, param_grid=rbf_param_grid, cv=cv, n_jobs=NUM_CORES, verbose=3, scoring=multi_roc2)
 
     # Search for hyper paramters
     grid.fit(train_data, train_labels)
@@ -92,7 +95,7 @@ def linearCVSVM(train_data, train_labels, test_data, OUTPUT_ID):
     pca = decomposition.PCA()
     pipe = Pipeline(steps=[('pca', pca), ('svc', svc)])
     N = len(train_data[0])
-    n_components = [N/22]
+    n_components = [500, 1000]  #[N/22]
 
     # Initialize range of SVM params
     C_range = np.logspace(-2, 10, 7)
@@ -103,7 +106,7 @@ def linearCVSVM(train_data, train_labels, test_data, OUTPUT_ID):
 
     # CV Params
     cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
-    grid = GridSearchCV(pipe, param_grid=linear_param_grid, cv=cv, n_jobs=NUM_CORES, verbose=3)
+    grid = GridSearchCV(pipe, param_grid=linear_param_grid, cv=cv, n_jobs=NUM_CORES, verbose=3, scoring=multi_roc2)
 
     # Search for hyper paramters
     grid.fit(train_data, train_labels)
@@ -114,7 +117,7 @@ def linearCVSVM(train_data, train_labels, test_data, OUTPUT_ID):
     best_pca.fit(train_data) 
     fit_train_data = best_pca.transform(train_data)
     fit_test_data = best_pca.transform(test_data) 
-    model = svm.SVC(C=grid.best_params_["svc__C"], class_weight=grid.best_params_["svc__class_weight"])
+    model = svm.LinearSVC(C=grid.best_params_["svc__C"], class_weight=grid.best_params_["svc__class_weight"])
     model.fit(fit_train_data, train_labels)
     writeCVResultstoCSV(grid.cv_results_, "linearSVM_"+OUTPUT_ID)
     return dict(model=model, test_data=fit_test_data, train_data=fit_train_data, params=str(grid.best_params_))
@@ -127,10 +130,10 @@ def CVLogisticRegression(train_data, train_labels, test_data, OUTPUT_ID):
     pca = decomposition.PCA()
     pipe = Pipeline(steps=[('pca', pca), ('logistic', logistic)])
     N = len(train_data[0])
-    n_components = [N/22]
+    n_components = [500, 1000]
 
     # Initialize range of SVM params
-    C_range = np.logspace(1, 10, 7)
+    C_range = np.logspace(-2, 10, 7)
     class_weight_range = [None]
 
     # Intialize param grid for each type of classifier
@@ -138,7 +141,7 @@ def CVLogisticRegression(train_data, train_labels, test_data, OUTPUT_ID):
 
     # CV Params
     cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
-    grid = GridSearchCV(pipe, param_grid=logistic_param_grid, cv=cv, n_jobs=NUM_CORES, verbose=3)
+    grid = GridSearchCV(pipe, param_grid=logistic_param_grid, cv=cv, n_jobs=NUM_CORES, verbose=3, scoring=multi_roc2)
 
     # Search for hyper paramters
     grid.fit(train_data, train_labels)
